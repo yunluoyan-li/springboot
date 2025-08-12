@@ -42,11 +42,11 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 输入正确的账号、密码后，系统会自动识别管理员或者用户，并跳转到相应主页。
 
-![login](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\login.png)
+![login](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/login.png)
 
 ### 展示板页面
 
-![yibiaopan](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\yibiaopan.png)
+![yibiaopan](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/yibiaopan.png)
 
 ### 管理员界面
 
@@ -58,19 +58,19 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 - 宠物列表
 
-  ![petlist](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\petlist.png)
+  ![petlist](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/petlist.png)
 
 - 添加宠物
 
-  ![tianjiacongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\tianjiacongwu.png)
+  ![tianjiacongwu](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/tianjiacongwu.png)
 
 - 编辑宠物
 
-  ![banjicongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\banjicongwu.png)
+  ![banjicongwu](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/banjicongwu.png)
 
 - 删除宠物
 
-  ![shanchuchongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shanchuchongwu.png)
+  ![shanchuchongwu](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/shanchuchongwu.png)
 
 #### 用户管理
 
@@ -78,7 +78,7 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 - 用户管理的增删查改类似宠物管理，不再赘述
 
-  ![user](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user.png)
+  ![user](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/user.png)
 
 
 
@@ -86,11 +86,11 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 - 领养记录查询，以及领养的通过与否
 
-  ![adoptionlist](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\adoptionlist.png)
+  ![adoptionlist](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/adoptionlist.png)
 
 - 领养申请详情
 
-  ![shenqing](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shenqing.png)
+  ![shenqing](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/shenqing.png)
 
   
 
@@ -98,27 +98,27 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
   #### 分类管理
 
-  ![fenlei](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\fenlei.png)
+  ![fenlei](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/fenlei.png)
 
   #### 品种管理
 
-  ![pingzhong](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\pingzhong.png)
+  ![pingzhong](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/pingzhong.png)
 
   #### 评论管理
 
-  ![pinlun](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\pinlun.png)
+  ![pinlun](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/pinlun.png)
 
   #### 标签管理
 
-  ![biaoqian](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\biaoqian.png)
+  ![biaoqian](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/biaoqian.png)
 
   #### 数据分析
 
-  ![shujufenxi](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shujufenxi.png)
+  ![shujufenxi](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/shujufenxi.png)
 
   #### 收藏管理
 
-  ![shouchang](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shouchang.png)
+  ![shouchang](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/shouchang.png)
 
 
 
@@ -126,25 +126,25 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 #### 宠物列表
 
-![chongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\chongwu.png)
+![chongwu](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/user/chongwu.png)
 
 #### 领养申请
 
-![lingyang](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\lingyang.png)
+![lingyang](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/user/lingyang.png)
 
 
 
 #### 评论管理
 
-![pinglun](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\pinglun.png)
+![pinglun](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/user/pinglun.png)
 
 #### 数据分析
 
-![shujufenxi](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\shujufenxi.png)
+![shujufenxi](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/user/shujufenxi.png)
 
 #### 收藏管理
 
-#### ![shoucang](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\shoucang.png)
+#### ![shoucang](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/user/shoucang.png)
 
 
 
@@ -171,7 +171,7 @@ frontend/
 
 
 
-![qianduan](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\qianduan.png)
+![qianduan](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/qianduan.png)
 
 ### 后端
 
@@ -193,7 +193,7 @@ src/main/java/com/example/petadoption/
 └─resources	// maven资源配置
 ```
 
-![houduan](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\houduan.png)
+![houduan](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/houduan.png)
 
 
 
@@ -203,11 +203,7 @@ src/main/java/com/example/petadoption/
 
 **使用Navicat生成ER模型图**
 
-![E-R](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\E-R.png)
-
-
-
-
+![E-R](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/E-R.png)
 
 
 
