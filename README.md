@@ -205,6 +205,8 @@ src/main/java/com/example/petadoption/
 
 ![E-R](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\E-R.png)
 
+https://github.com/yunluoyan-li/springboot/blob/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/E-R.png?raw=true
+
 
 
 
