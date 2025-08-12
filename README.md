@@ -203,7 +203,17 @@ src/main/java/com/example/petadoption/
 
 **使用Navicat生成ER模型图**
 
+<<<<<<< HEAD
 ![E-R](https://raw.githubusercontent.com/yunluoyan-li/springboot/refs/heads/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/E-R.png)
+=======
+![E-R](https://github.com/yunluoyan-li/springboot/blob/main/%E5%9F%BA%E4%BA%8Espringboot%E7%9A%84%E5%AE%A0%E7%89%A9%E9%A2%86%E5%85%BB%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/src/main/images/E-R.png?raw=true)
+
+
+
+
+
+
+>>>>>>> bb07f6c758c74606b396f7ffc78fa492022f247b
 
 
 
