@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>评论详情</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-comment-dots"></i> 评论详情
+            </h1>
+            <div>
+                <a th:href="@{/comments/edit/{id}(id=${comment.commentId})}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> 编辑</a>
+                <a th:href="@{/comments/delete/{id}(id=${comment.commentId})}" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除该评论吗？')"><i class="fas fa-trash"></i> 删除</a>
+                <a href="/comments/list" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> 返回列表</a>
+            </div>
+        </div>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">评论信息</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-2">评论ID</dt>
+                    <dd class="col-sm-10" th:text="${comment.commentId}">1</dd>
+                    <dt class="col-sm-2">内容</dt>
+                    <dd class="col-sm-10" th:text="${comment.content}">内容</dd>
+                    <dt class="col-sm-2">宠物ID</dt>
+                    <dd class="col-sm-10" th:text="${comment.petId}">1</dd>
+                    <dt class="col-sm-2">用户ID</dt>
+                    <dd class="col-sm-10" th:text="${comment.userId}">1</dd>
+                    <dt class="col-sm-2">父评论ID</dt>
+                    <dd class="col-sm-10" th:text="${comment.parentId}">-</dd>
+                    <dt class="col-sm-2">状态</dt>
+                    <dd class="col-sm-10">
+                        <span th:if="${comment.status == 'PUBLISHED'}" class="badge badge-success">已发布</span>
+                        <span th:if="${comment.status == 'HIDDEN'}" class="badge badge-warning">待审核</span>
+                        <span th:if="${comment.status == 'DELETED'}" class="badge badge-danger">已删除</span>
+                    </dd>
+                    <dt class="col-sm-2">创建时间</dt>
+                    <dd class="col-sm-10" th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

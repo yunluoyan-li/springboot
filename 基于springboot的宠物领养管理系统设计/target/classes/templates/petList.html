@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>宠物列表</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .pet-management {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        
+        .page-title {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .page-title i {
+            color: #667eea;
+            margin-right: 10px;
+        }
+        
+        .add-pet-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .add-pet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* 高级搜索表单样式 */
+        .advanced-search .card {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-radius: 10px;
+        }
+        
+        .advanced-search .card-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            padding: 15px 20px;
+        }
+        
+        .advanced-search .card-body {
+            padding: 20px;
+        }
+        
+        .advanced-search .form-control,
+        .advanced-search .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .advanced-search .form-control:focus,
+        .advanced-search .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        /* 快速筛选按钮样式 */
+        .quick-filters .btn-group {
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .quick-filters .btn {
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-filters .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        /* 宠物表格样式 */
+        .pet-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .table thead th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+        
+        .table tbody td {
+            padding: 15px;
+            border: none;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        /* 分页样式 */
+        .pagination-container {
+            margin-top: 30px;
+        }
+        
+        .pagination .page-link {
+            border: none;
+            color: #667eea;
+            margin: 0 2px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination .page-link:hover {
+            background-color: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+        }
+        
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #f8f9fa;
+        }
+        
+
+    </style>
+</head>
+<body>
+<div class="pet-management">
+    <div class="content-card">
+        <!-- 页面标题和操作按钮 -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-paw"></i>
+                宠物管理
+            </h1>
+            <div>
+                <a href="/adoption/my-applications" class="btn btn-info me-2">
+                    <i class="fas fa-heart"></i> 我的申请
+                </a>
+                <!-- 添加宠物按钮 - 仅管理员可见 -->
+                <a th:if="${session.userRole == 'ADMIN'}" href="/pets/add" class="add-pet-btn">
+                    <i class="fas fa-plus"></i> 添加宠物
+                </a>
+            </div>
+        </div>
+
+        <!-- 消息提示 -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+
+        
+        <!-- 高级搜索表单 -->
+        <div class="advanced-search mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-search"></i> 高级搜索
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/pets/search}" method="get" class="row">
+                        <div class="col-md-3">
+                            <label for="keyword" class="form-label">关键词</label>
+                            <input type="text" class="form-control" id="keyword" name="keyword" 
+                                   th:value="${keyword}" placeholder="宠物名称、描述或颜色">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="breedId" class="form-label">品种</label>
+                            <select class="form-select" id="breedId" name="breedId">
+                                <option value="">全部品种</option>
+                                <option th:each="breed : ${breeds}" 
+                                        th:value="${breed.breedId}" 
+                                        th:text="${breed.breedName}"
+                                        th:selected="${breedId == breed.breedId}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="status" class="form-label">状态</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">全部状态</option>
+                                <option value="AVAILABLE" th:selected="${status == 'AVAILABLE'}">可领养</option>
+                                <option value="ADOPTED" th:selected="${status == 'ADOPTED'}">已领养</option>
+                                <option value="PENDING" th:selected="${status == 'PENDING'}">待审核</option>
+                                <option value="UNAVAILABLE" th:selected="${status == 'UNAVAILABLE'}">不可用</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="gender" class="form-label">性别</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">全部性别</option>
+                                <option value="MALE" th:selected="${gender == 'MALE'}">公</option>
+                                <option value="FEMALE" th:selected="${gender == 'FEMALE'}">母</option>
+                                <option value="UNKNOWN" th:selected="${gender == 'UNKNOWN'}">未知</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search"></i> 搜索
+                            </button>
+                            <a href="/pets/list" class="btn btn-secondary">
+                                <i class="fas fa-refresh"></i> 重置
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 快速筛选按钮 -->
+        <div class="quick-filters mb-3">
+            <div class="btn-group" role="group">
+                <a href="/pets/list" class="btn btn-outline-primary">
+                    <i class="fas fa-paw"></i> 全部宠物
+                </a>
+                <a href="/pets/list/status/AVAILABLE" class="btn btn-outline-success">
+                    <i class="fas fa-heart"></i> 可领养
+                </a>
+                <a href="/pets/list/status/ADOPTED" class="btn btn-outline-info">
+                    <i class="fas fa-home"></i> 已领养
+                </a>
+                <a href="/pets/list/status/PENDING" class="btn btn-outline-warning">
+                    <i class="fas fa-clock"></i> 待审核
+                </a>
+                <a href="/pets/list/gender/MALE" class="btn btn-outline-primary">
+                    <i class="fas fa-mars"></i> 公
+                </a>
+                <a href="/pets/list/gender/FEMALE" class="btn btn-outline-danger">
+                    <i class="fas fa-venus"></i> 母
+                </a>
+            </div>
+        </div>
+        
+        <!-- 宠物表格 -->
+        <div class="pet-table">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-id-card"></i> ID</th>
+                            <th><i class="fas fa-paw"></i> 名字</th>
+                            <th><i class="fas fa-dna"></i> 品种</th>
+                            <th><i class="fas fa-tags"></i> 标签</th>
+                            <th><i class="fas fa-venus-mars"></i> 性别</th>
+                            <th><i class="fas fa-palette"></i> 颜色</th>
+                            <th><i class="fas fa-ruler"></i> 体型</th>
+                            <th><i class="fas fa-heartbeat"></i> 健康状况</th>
+                            <th><i class="fas fa-circle"></i> 状态</th>
+                            <th><i class="fas fa-cogs"></i> 操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pet : ${pets}">
+                            <td th:text="${pet.petId}"></td>
+                            <td th:text="${pet.name}"></td>
+                            <td th:text="${pet.breed != null ? pet.breed.name : '未知'}"></td>
+                            <td>
+                                <span th:if="${pet.tags != null && !pet.tags.isEmpty()}" th:each="tag : ${pet.tags}" th:text="${tag.name}" class="badge"
+                                    th:style="'background-color:' + (${tag.color} != null ? tag.color : '#e0e0e0') + ';color:#222;margin-right:3px;'">
+                                </span>
+                                <span th:if="${pet.tags == null || pet.tags.isEmpty()}" class="text-muted">无</span>
+                            </td>
+                            <td>
+                                <span th:if="${pet.gender == 'MALE'}" class="badge bg-primary">公</span>
+                                <span th:if="${pet.gender == 'FEMALE'}" class="badge" style="background-color: #e83e8c;">母</span>
+                                <span th:if="${pet.gender == 'UNKNOWN'}" class="badge bg-secondary">未知</span>
+                                <span th:if="${pet.gender == null}" class="text-muted">-</span>
+                            </td>
+                            <td th:text="${pet.color != null ? pet.color : '-'}"></td>
+                            <td>
+                                <span th:if="${pet.size == 'SMALL'}" class="badge bg-info">小型</span>
+                                <span th:if="${pet.size == 'MEDIUM'}" class="badge bg-warning">中型</span>
+                                <span th:if="${pet.size == 'LARGE'}" class="badge bg-danger">大型</span>
+                                <span th:if="${pet.size == null}" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${pet.healthStatus == 'EXCELLENT'}" class="badge bg-success">优秀</span>
+                                <span th:if="${pet.healthStatus == 'GOOD'}" class="badge bg-primary">良好</span>
+                                <span th:if="${pet.healthStatus == 'FAIR'}" class="badge bg-warning">一般</span>
+                                <span th:if="${pet.healthStatus == 'POOR'}" class="badge bg-danger">较差</span>
+                                <span th:if="${pet.healthStatus == null}" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${pet.status == 'AVAILABLE'}" class="badge bg-success">可领养</span>
+                                <span th:if="${pet.status == 'ADOPTED'}" class="badge bg-secondary">已领养</span>
+                                <span th:if="${pet.status == 'PENDING'}" class="badge bg-warning">待审核</span>
+                                <span th:if="${pet.status == 'UNAVAILABLE'}" class="badge bg-danger">不可用</span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <!-- 编辑按钮 - 仅管理员可见 -->
+                                    <a th:if="${session.userRole == 'ADMIN'}" 
+                                       th:href="@{/pets/edit/{id}(id=${pet.petId})}" 
+                                       class="btn btn-primary btn-sm me-1" title="编辑">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <!-- 收藏按钮 - 所有用户可见 -->
+                                    <form th:action="@{/favorites/add}" method="post" style="display:inline;">
+                                        <input type="hidden" name="petId" th:value="${pet.petId}" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm me-1" title="收藏">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </form>
+                                    <!-- 申请领养按钮 - 所有用户可见 -->
+                                    <a th:if="${pet.status == 'AVAILABLE'}" 
+                                       th:href="@{/adoption/apply/{id}(id=${pet.petId})}" 
+                                       class="btn btn-success btn-sm me-1 no-ajax" title="申请领养">
+                                        <i class="fas fa-hand-holding-heart"></i>
+                                    </a>
+                                    <!-- 删除按钮 - 仅管理员可见 -->
+                                    <a th:if="${session.userRole == 'ADMIN'}" 
+                                       th:href="@{/pets/delete/{id}(id=${pet.petId})}" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('确定要删除这个宠物吗？')" title="删除">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 空状态 -->
+            <div th:if="${#lists.isEmpty(pets)}" class="text-center py-5">
+                <i class="fas fa-paw" style="font-size: 4rem; color: #dee2e6;"></i>
+                <h3 class="mt-3">暂无宠物数据</h3>
+                <p class="text-muted" th:if="${session.userRole == 'ADMIN'}">点击右上角的"添加宠物"按钮来添加第一个宠物</p>
+                <p class="text-muted" th:unless="${session.userRole == 'ADMIN'}">暂无可领养的宠物，请稍后再来查看</p>
+            </div>
+        </div>
+        
+        <!-- 分页导航 -->
+        <div th:if="${totalPages != null and totalPages > 1}" class="pagination-container">
+            <nav aria-label="宠物列表分页">
+                <ul class="pagination justify-content-center">
+                    <!-- 最上页（首页） -->
+                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:if="${currentPage > 1 and keyword != null}"
+                           th:href="@{/pets/search(keyword=${keyword}, breedId=${breedId}, status=${status}, gender=${gender}, page=1, size=${pageSize})}"
+                           title="最上页">
+                            <i class="fas fa-angle-double-left"></i> 最上页
+                        </a>
+                        <a class="page-link" 
+                           th:if="${currentPage > 1 and keyword == null}"
+                           th:href="@{/pets/list(page=1, size=${pageSize})}"
+                           title="最上页">
+                            <i class="fas fa-angle-double-left"></i> 最上页
+                        </a>
+                        <span class="page-link" th:if="${currentPage == 1}" title="最上页">
+                            <i class="fas fa-angle-double-left"></i> 最上页
+                        </span>
+                    </li>
+                    
+                    <!-- 前一页 -->
+                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:if="${currentPage > 1 and keyword != null}"
+                           th:href="@{/pets/search(keyword=${keyword}, breedId=${breedId}, status=${status}, gender=${gender}, page=${currentPage - 1}, size=${pageSize})}"
+                           title="前一页">
+                            <i class="fas fa-chevron-left"></i> 前一页
+                        </a>
+                        <a class="page-link" 
+                           th:if="${currentPage > 1 and keyword == null}"
+                           th:href="@{/pets/list(page=${currentPage - 1}, size=${pageSize})}"
+                           title="前一页">
+                            <i class="fas fa-chevron-left"></i> 前一页
+                        </a>
+                        <span class="page-link" th:if="${currentPage == 1}" title="前一页">
+                            <i class="fas fa-chevron-left"></i> 前一页
+                        </span>
+                    </li>
+                    
+                    <!-- 当前页 -->
+                    <li class="page-item active">
+                        <span class="page-link" th:text="${currentPage}"></span>
+                    </li>
+                    
+                    <!-- 下一页 -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:if="${currentPage < totalPages and keyword != null}"
+                           th:href="@{/pets/search(keyword=${keyword}, breedId=${breedId}, status=${status}, gender=${gender}, page=${currentPage + 1}, size=${pageSize})}"
+                           title="下一页">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a class="page-link" 
+                           th:if="${currentPage < totalPages and keyword == null}"
+                           th:href="@{/pets/list(page=${currentPage + 1}, size=${pageSize})}"
+                           title="下一页">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <span class="page-link" th:if="${currentPage == totalPages}" title="下一页">
+                            下一页 <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                    
+                    <!-- 最下页（末页） -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link" 
+                           th:if="${currentPage < totalPages and keyword != null}"
+                           th:href="@{/pets/search(keyword=${keyword}, breedId=${breedId}, status=${status}, gender=${gender}, page=${totalPages}, size=${pageSize})}"
+                           title="最下页">
+                            最下页 <i class="fas fa-angle-double-right"></i>
+                        </a>
+                        <a class="page-link" 
+                           th:if="${currentPage < totalPages and keyword == null}"
+                           th:href="@{/pets/list(page=${totalPages}, size=${pageSize})}"
+                           title="最下页">
+                            最下页 <i class="fas fa-angle-double-right"></i>
+                        </a>
+                        <span class="page-link" th:if="${currentPage == totalPages}" title="最下页">
+                            最下页 <i class="fas fa-angle-double-right"></i>
+                        </span>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- 分页信息 -->
+            <div class="text-center mt-2">
+                <small class="text-muted">
+                    显示第 <span th:text="${(currentPage - 1) * pageSize + 1}">1</span> - 
+                    <span th:text="${currentPage * pageSize > totalCount ? totalCount : currentPage * pageSize}">12</span> 条，
+                    共 <span th:text="${totalCount}">0</span> 条记录
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// 为快速筛选按钮添加激活状态
+document.addEventListener('DOMContentLoaded', function() {
+    const currentUrl = window.location.pathname;
+    const quickFilterButtons = document.querySelectorAll('.quick-filters .btn');
+    
+    quickFilterButtons.forEach(button => {
+        if (button.href === window.location.href) {
+            button.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-info', 'btn-outline-warning', 'btn-outline-danger');
+            button.classList.add('btn-primary');
+        }
+    });
+});
+</script>
+</body>
+</html>

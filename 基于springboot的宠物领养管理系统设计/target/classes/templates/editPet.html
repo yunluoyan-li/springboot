@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑宠物</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-edit"></i> 编辑宠物</h3>
+                </div>
+                <div class="card-body">
+                    <!-- 错误消息显示 -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <!-- 成功消息显示 -->
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle"></i>
+                        <span th:text="${success}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <form th:action="@{/pets/update}" th:object="${pet}" method="post">
+                        <input type="hidden" th:field="*{petId}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">宠物名字 *</label>
+                                    <input type="text" class="form-control" th:field="*{name}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="breedId" class="form-label">品种 *</label>
+                                    <select class="form-select" th:field="*{breedId}" required>
+                                        <option value="">请选择品种</option>
+                                        <option th:each="breed : ${breeds}" 
+                                                th:value="${breed.breedId}" 
+                                                th:text="${breed.breedName}"></option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="tagSelect" class="form-label">标签</label>
+                                    <select id="tagSelect" name="tagIds" multiple="multiple" class="form-select">
+                                        <option th:each="tag : ${allTags}" th:value="${tag.tagId}" th:text="${tag.name}"
+                                            th:selected="${pet.tags != null and #lists.contains(pet.tags, tag)}"></option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">性别</label>
+                                    <select class="form-select" th:field="*{gender}">
+                                        <option value="">请选择性别</option>
+                                        <option value="MALE">公</option>
+                                        <option value="FEMALE">母</option>
+                                        <option value="UNKNOWN">未知</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="color" class="form-label">颜色</label>
+                                    <input type="text" class="form-control" th:field="*{color}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="size" class="form-label">体型</label>
+                                    <select class="form-select" th:field="*{size}">
+                                        <option value="">请选择体型</option>
+                                        <option value="SMALL">小型</option>
+                                        <option value="MEDIUM">中型</option>
+                                        <option value="LARGE">大型</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="healthStatus" class="form-label">健康状况</label>
+                                    <select class="form-select" th:field="*{healthStatus}">
+                                        <option value="">请选择健康状况</option>
+                                        <option value="EXCELLENT">优秀</option>
+                                        <option value="GOOD">良好</option>
+                                        <option value="FAIR">一般</option>
+                                        <option value="POOR">较差</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">状态 *</label>
+                                    <select class="form-select" th:field="*{status}" required>
+                                        <option value="AVAILABLE">可领养</option>
+                                        <option value="PENDING">待审核</option>
+                                        <option value="ADOPTED">已领养</option>
+                                        <option value="UNAVAILABLE">不可用</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">描述</label>
+                            <textarea class="form-control" th:field="*{description}" rows="3" 
+                                      placeholder="请描述宠物的特点、性格等..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="story" class="form-label">背景故事</label>
+                            <textarea class="form-control" th:field="*{story}" rows="3" 
+                                      placeholder="宠物的背景故事、救助经历等..."></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/pets/list" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> 返回列表
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> 保存修改
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#tagSelect').select2({
+        placeholder: '请选择标签',
+        width: '100%'
+    });
+});
+</script>
+</body>
+</html>

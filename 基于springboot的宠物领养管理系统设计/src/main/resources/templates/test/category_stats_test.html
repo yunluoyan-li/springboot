@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>分类统计测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .test-container {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-result {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .result-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .result-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="container">
+            <div class="content-card">
+                <h1 class="page-title">
+                    <i class="fas fa-chart-bar"></i> 分类统计测试
+                </h1>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>测试统计卡片（使用内联样式）</h4>
+                        <div style="display: grid !important; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important; gap: 20px !important; margin-bottom: 30px !important;">
+                            <div style="background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; padding: 25px !important; border-radius: 15px !important; text-align: center !important; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important; transition: all 0.3s ease !important;">
+                                <div style="font-size: 2.5rem !important; margin-bottom: 15px !important; opacity: 0.9 !important;">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div style="font-size: 2.5rem !important; font-weight: 700 !important; margin-bottom: 10px !important;">9</div>
+                                <div style="font-size: 1rem !important; opacity: 0.9 !important;">总分类数</div>
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; padding: 25px !important; border-radius: 15px !important; text-align: center !important; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important; transition: all 0.3s ease !important;">
+                                <div style="font-size: 2.5rem !important; margin-bottom: 15px !important; opacity: 0.9 !important;">
+                                    <i class="fas fa-paw"></i>
+                                </div>
+                                <div style="font-size: 2.5rem !important; font-weight: 700 !important; margin-bottom: 10px !important;">4</div>
+                                <div style="font-size: 1rem !important; opacity: 0.9 !important;">有描述分类</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h4>测试图表区域</h4>
+                        <div style="background: #f8f9fa !important; border-radius: 12px !important; padding: 25px !important; margin-bottom: 25px !important;">
+                            <h4 style="color: #2c3e50 !important; font-weight: 600 !important; margin-bottom: 20px !important; display: flex !important; align-items: center !important; gap: 10px !important;">
+                                <i class="fas fa-chart-pie"></i>
+                                分类分布图
+                            </h4>
+                            <div style="position: relative !important; height: 200px !important; margin: 20px 0 !important; background: #e9ecef; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d;">
+                                图表区域测试
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-result">
+                    <h4>测试结果</h4>
+                    <div class="result-item">
+                        <span class="result-icon success">✅</span>
+                        <span>统计卡片 - 应该显示渐变背景和阴影</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon success">✅</span>
+                        <span>图标显示 - Font Awesome图标应该正确显示</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon success">✅</span>
+                        <span>字体大小 - 数字应该显示为2.5rem</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon success">✅</span>
+                        <span>图表区域 - 应该显示灰色背景和圆角</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon success">✅</span>
+                        <span>响应式布局 - 卡片应该自适应屏幕大小</span>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>说明</h5>
+                    <p>这个测试页面验证了分类统计页面的样式修复。如果这个页面显示正常，但实际的统计页面仍然有问题，那可能是：</p>
+                    <ul>
+                        <li>Chart.js库没有正确加载</li>
+                        <li>AJAX加载时的样式应用问题</li>
+                        <li>浏览器缓存问题</li>
+                    </ul>
+                    <p>建议访问实际的统计页面：<a href="/categories/stats" target="_blank">/categories/stats</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

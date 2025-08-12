@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>品种统计 - 宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/layout.css}" rel="stylesheet">
+    <!-- 确保引入 Chart.js 官方 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .breed-stats {
+            padding: 20px;
+        }
+        .content-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .page-title {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        .page-title i {
+            color: #3498db;
+            margin-right: 10px;
+        }
+        .stats-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .stats-section h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .stats-section h4 i {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        .stats-label {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        .stats-icon {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .care-level-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #e9ecef;
+        }
+        .care-level-low {
+            border-left-color: #28a745;
+        }
+        .care-level-medium {
+            border-left-color: #ffc107;
+        }
+        .care-level-high {
+            border-left-color: #dc3545;
+        }
+        .care-level-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .care-level-count {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="breed-list">
+            <div class="content-card">
+                <!-- 页面标题 -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-chart-bar"></i>
+                        品种统计
+                    </h1>
+                    <a href="/breeds/list" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> 返回列表
+                    </a>
+                </div>
+
+                <!-- 总体统计 -->
+                <div class="stats-section">
+                    <h4><i class="fas fa-chart-pie"></i> 总体统计</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stats-card text-center">
+                                <div class="stats-icon">
+                                    <i class="fas fa-paw"></i>
+                                </div>
+                                <div class="stats-number" th:text="${totalBreeds}">0</div>
+                                <div class="stats-label">总品种数</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="stats-card text-center">
+                                <div class="stats-icon">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <div class="stats-number" th:text="${lowCareBreeds}">0</div>
+                                <div class="stats-label">低护理难度</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="stats-card text-center">
+                                <div class="stats-icon">
+                                    <i class="fas fa-adjust"></i>
+                                </div>
+                                <div class="stats-number" th:text="${mediumCareBreeds}">0</div>
+                                <div class="stats-label">中等护理难度</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="stats-card text-center">
+                                <div class="stats-icon">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="stats-number" th:text="${highCareBreeds}">0</div>
+                                <div class="stats-label">高护理难度</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 护理难度分布 -->
+                <div class="stats-section">
+                    <h4><i class="fas fa-list-alt"></i> 护理难度分布</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="care-level-item care-level-low">
+                                <div class="care-level-name">
+                                    <i class="fas fa-leaf me-2"></i>低难度 - 适合新手
+                                </div>
+                                <div class="care-level-count" th:text="${lowCareBreeds}">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="care-level-item care-level-medium">
+                                <div class="care-level-name">
+                                    <i class="fas fa-adjust me-2"></i>中等难度 - 需要一定经验
+                                </div>
+                                <div class="care-level-count" th:text="${mediumCareBreeds}">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="care-level-item care-level-high">
+                                <div class="care-level-name">
+                                    <i class="fas fa-fire me-2"></i>高难度 - 需要丰富经验
+                                </div>
+                                <div class="care-level-count" th:text="${highCareBreeds}">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="care-level-item">
+                                <div class="care-level-name">
+                                    <i class="fas fa-question me-2"></i>未设置护理难度
+                                </div>
+                                <div class="care-level-count" th:text="${unsetCareBreeds}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分类统计 -->
+                <div class="stats-section">
+                    <h4><i class="fas fa-tags"></i> 分类统计</h4>
+                    
+                    <div class="row">
+                        <div th:each="categoryStats : ${categoryStats}" class="col-md-6 col-lg-4 mb-3">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="stats-label" th:text="${categoryStats.categoryName}">分类名称</div>
+                                        <div class="stats-number" th:text="${categoryStats.breedCount}">0</div>
+                                    </div>
+                                    <div class="stats-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表展示 -->
+                <div class="stats-section">
+                    <h4><i class="fas fa-chart-line"></i> 图表展示</h4>
+                    
+                    <div class="chart-container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>护理难度分布</h5>
+                                <canvas id="careLevelChart" width="400" height="300"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>分类分布</h5>
+                                <canvas id="categoryChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/layout-protection.js}"></script>
+    
+    <script th:inline="javascript">
+        // 获取统计数据
+        const breeds = /*[[${breeds}]]*/ [];
+        
+        // 护理难度分布图表
+        const careLevelCtx = document.getElementById('careLevelChart').getContext('2d');
+        const careLevelData = {
+            low: breeds.filter(b => b.careLevel === 'LOW').length,
+            medium: breeds.filter(b => b.careLevel === 'MEDIUM').length,
+            high: breeds.filter(b => b.careLevel === 'HIGH').length
+        };
+        
+        new Chart(careLevelCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['低难度', '中等难度', '高难度', '未设置'],
+                datasets: [{
+                    data: [
+                        careLevelData.low,
+                        careLevelData.medium,
+                        careLevelData.high,
+                        breeds.length - (careLevelData.low + careLevelData.medium + careLevelData.high)
+                    ],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#6c757d']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // 分类分布图表
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const categoryCounts = {};
+        breeds.forEach(breed => {
+            categoryCounts[breed.categoryId] = (categoryCounts[breed.categoryId] || 0) + 1;
+        });
+        
+        new Chart(categoryCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(categoryCounts).map(id => `分类${id}`),
+                datasets: [{
+                    label: '品种数量',
+                    data: Object.values(categoryCounts),
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

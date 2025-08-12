@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.PetBreedDao">
+    <resultMap id="petBreedResultMap" type="com.example.petadoption.model.PetBreed">
+        <id property="breedId" column="breed_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="breedName" column="breed_name"/>
+        <result property="origin" column="origin"/>
+        <result property="lifeSpan" column="life_span"/>
+        <result property="temperament" column="temperament"/>
+        <result property="careLevel" column="care_level"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="searchKeywords" column="search_keywords"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="petBreedResultMap">
+        SELECT breed_id, category_id, breed_name, origin, life_span, temperament, care_level, description, created_at, search_keywords 
+        FROM pet_breeds
+    </select>
+
+    <select id="findById" parameterType="Integer" resultMap="petBreedResultMap">
+        SELECT breed_id, category_id, breed_name, origin, life_span, temperament, care_level, description, created_at, search_keywords 
+        FROM pet_breeds WHERE breed_id = #{breedId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="breedId">
+        INSERT INTO pet_breeds (category_id, breed_name, origin, life_span, temperament, care_level, description, created_at, search_keywords)
+        VALUES (#{categoryId}, #{breedName}, #{origin}, #{lifeSpan}, #{temperament}, #{careLevel}, #{description}, NOW(), #{searchKeywords})
+    </insert>
+
+    <update id="update" parameterType="com.example.petadoption.model.PetBreed">
+        UPDATE pet_breeds
+        SET category_id = #{categoryId},
+            breed_name = #{breedName},
+            origin = #{origin},
+            life_span = #{lifeSpan},
+            temperament = #{temperament},
+            care_level = #{careLevel},
+            description = #{description},
+            search_keywords = #{searchKeywords}
+        WHERE breed_id = #{breedId}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM pet_breeds WHERE breed_id = #{breedId}
+    </delete>
+
+    <!-- 数据分析相关方法 -->
+    
+    <!-- 查询热门宠物品种 -->
+    <select id="getTopPetBreeds" parameterType="int" resultType="java.util.Map">
+        SELECT 
+            pb.breed_name as label,
+            COUNT(p.pet_id) as value
+        FROM pet_breeds pb
+        LEFT JOIN pets p ON pb.breed_id = p.breed_id
+        GROUP BY pb.breed_id, pb.breed_name
+        ORDER BY value DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

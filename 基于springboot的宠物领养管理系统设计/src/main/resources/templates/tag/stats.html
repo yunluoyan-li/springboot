@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>标签统计</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid">
+            <!-- 页面标题 -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-chart-bar"></i> 标签统计
+                </h1>
+                <a href="/tags/list" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+                    <i class="fas fa-arrow-left fa-sm text-white-50"></i> 返回列表
+                </a>
+            </div>
+
+            <!-- 统计概览 -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        总标签数
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tagStats != null ? tagStats.size() : 0}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tags fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        使用中标签
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="usedTagsCount">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        总关联数
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsageCount">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-link fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        热门标签
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="hotTagName">-</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-fire fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 标签使用统计表格 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">标签使用统计</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>排名</th>
+                                    <th>标签名称</th>
+                                    <th>使用次数</th>
+                                    <th>颜色</th>
+                                    <th>使用率</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stat, iterStat : ${tagStats}" th:with="tagId=${stat.tagId}, tagName=${stat.tagName}, usageCount=${stat.usageCount}, tagColor=${stat.tagColor}">
+                                    <td th:text="${iterStat.index + 1}">1</td>
+                                    <td>
+                                        <span class="badge badge-secondary" 
+                                              th:style="'background-color: ' + ${tagColor != null ? tagColor : '#6c757d'}"
+                                              th:text="${tagName}">标签名称</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info" th:text="${usageCount}">0</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-light" 
+                                              th:style="'background-color: ' + ${tagColor != null ? tagColor : '#6c757d'}"
+                                              th:text="${tagColor != null ? tagColor : '默认'}">颜色</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 th:style="'width: ' + ${tagStats != null && tagStats.size() > 0 ? (usageCount * 100 / tagStats.get(0).usageCount) : 0} + '%'"
+                                                 th:attr="aria-valuenow=${usageCount}, aria-valuemin='0', aria-valuemax=${tagStats != null && tagStats.size() > 0 ? tagStats.get(0).usageCount : 1}">
+                                                <span th:text="${tagStats != null && tagStats.size() > 0 ? (usageCount * 100 / tagStats.get(0).usageCount) : 0}">0</span>%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/tags/detail/{id}(id=${tagId})}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a th:href="@{/tags/edit/{id}(id=${tagId})}" 
+                                               class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${tagStats == null || tagStats.isEmpty()}">
+                                    <td colspan="6" class="text-center text-muted">
+                                        <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                        <br>暂无标签统计数据
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表展示 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">标签使用分布</h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="tagUsageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">标签颜色分布</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4 text-center mb-3" th:each="stat : ${tagStats}" th:if="${stat.usageCount > 0}">
+                                    <div class="color-box" 
+                                         th:style="'background-color: ' + ${stat.tagColor != null ? stat.tagColor : '#6c757d'}"
+                                         th:title="${stat.tagName} + ': ' + ${stat.usageCount} + '次'">
+                                    </div>
+                                    <small class="text-muted" th:text="${stat.tagName}">标签名</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .color-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .progress {
+            background-color: #f8f9fc;
+        }
+        .progress-bar {
+            background-color: #4e73df;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        // 计算统计数据
+        window.addEventListener('load', function() {
+            const tagStats = /*[[${tagStats}]]*/ [];
+            let usedTagsCount = 0;
+            let totalUsageCount = 0;
+            let maxUsage = 0;
+            let hotTagName = '-';
+
+            if (tagStats && tagStats.length > 0) {
+                tagStats.forEach(function(stat) {
+                    if (stat.usageCount > 0) {
+                        usedTagsCount++;
+                        totalUsageCount += stat.usageCount;
+                        if (stat.usageCount > maxUsage) {
+                            maxUsage = stat.usageCount;
+                            hotTagName = stat.tagName;
+                        }
+                    }
+                });
+            }
+
+            document.getElementById('usedTagsCount').textContent = usedTagsCount;
+            document.getElementById('totalUsageCount').textContent = totalUsageCount;
+            document.getElementById('hotTagName').textContent = hotTagName;
+        });
+
+        // 创建图表（如果有Chart.js）
+        if (typeof Chart !== 'undefined') {
+            const ctx = document.getElementById('tagUsageChart').getContext('2d');
+            const tagStats = /*[[${tagStats}]]*/ [];
+            
+            const labels = tagStats.map(stat => stat.tagName);
+            const data = tagStats.map(stat => stat.usageCount);
+            const colors = tagStats.map(stat => stat.tagColor || '#6c757d');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

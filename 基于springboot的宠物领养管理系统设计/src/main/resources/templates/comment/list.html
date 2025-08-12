@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>评论管理</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <!-- 页面标题 -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-comments"></i> 评论管理
+            </h1>
+            <a href="/comments/add" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> 新增评论
+            </a>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="row mb-4">
+            <div class="col-xl-2 col-md-4 mb-2">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">总评论数</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${commentStats.totalCount}">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-2">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">已发布</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${commentStats.publishedCount}">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-2">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">待审核</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${commentStats.hiddenCount}">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-2">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">已删除</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${commentStats.deletedCount}">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 mb-2">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body text-center">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">今日新增</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${commentStats.todayCount}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索与筛选 -->
+        <form class="form-inline mb-3" method="get" action="/comments/list">
+            <input type="text" class="form-control mr-2 mb-2" name="keyword" placeholder="内容关键词" th:value="${keyword}">
+            <select class="form-control mr-2 mb-2" name="status">
+                <option value="">全部状态</option>
+                <option value="PUBLISHED" th:selected="${status == 'PUBLISHED'}">已发布</option>
+                <option value="HIDDEN" th:selected="${status == 'HIDDEN'}">待审核</option>
+                <option value="DELETED" th:selected="${status == 'DELETED'}">已删除</option>
+            </select>
+            <input type="number" class="form-control mr-2 mb-2" name="petId" placeholder="宠物ID" th:value="${petId}">
+            <input type="number" class="form-control mr-2 mb-2" name="userId" placeholder="用户ID" th:value="${userId}">
+            <button type="submit" class="btn btn-info mb-2 mr-2">
+                <i class="fas fa-search"></i> 搜索
+            </button>
+            <a href="/comments/list" class="btn btn-secondary mb-2">重置</a>
+        </form>
+
+        <!-- 批量操作 -->
+        <form id="batchForm" method="post" action="/comments/batch-audit">
+            <input type="hidden" name="ids" id="batchIds">
+            <input type="hidden" name="status" id="batchStatus">
+            <div class="mb-2" th:if="${session.userRole == 'ADMIN'}">
+                <button type="button" class="btn btn-success btn-sm mr-1" onclick="batchAudit('PUBLISHED')">
+                    <i class="fas fa-check"></i> 批量发布
+                </button>
+                <button type="button" class="btn btn-warning btn-sm mr-1" onclick="batchAudit('HIDDEN')">
+                    <i class="fas fa-eye-slash"></i> 批量隐藏
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="batchAudit('DELETED')">
+                    <i class="fas fa-trash"></i> 批量删除
+                </button>
+            </div>
+
+            <!-- 评论列表表格 -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-light">
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
+                        <th>ID</th>
+                        <th>内容</th>
+                        <th>宠物ID</th>
+                        <th>用户ID</th>
+                        <th>父评论</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="comment : ${comments}">
+                        <td><input type="checkbox" name="idsChk" th:value="${comment.commentId}"></td>
+                        <td th:text="${comment.commentId}">1</td>
+                        <td th:text="${#strings.abbreviate(comment.content, 40)}">内容</td>
+                        <td th:text="${comment.petId}">1</td>
+                        <td th:text="${comment.userId}">1</td>
+                        <td th:text="${comment.parentId}">-</td>
+                        <td>
+                            <span th:if="${comment.status == 'PUBLISHED'}" class="badge badge-success">已发布</span>
+                            <span th:if="${comment.status == 'HIDDEN'}" class="badge badge-warning">待审核</span>
+                            <span th:if="${comment.status == 'DELETED'}" class="badge badge-danger">已删除</span>
+                        </td>
+                        <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                        <td>
+                            <a th:href="@{/comments/detail/{id}(id=${comment.commentId})}" class="btn btn-info btn-sm" title="详情"><i class="fas fa-eye"></i></a>
+                            <a th:if="${session.userRole == 'ADMIN'}" th:href="@{/comments/edit/{id}(id=${comment.commentId})}" class="btn btn-warning btn-sm" title="编辑"><i class="fas fa-edit"></i></a>
+                            <a th:if="${session.userRole == 'ADMIN'}" th:href="@{/comments/delete/{id}(id=${comment.commentId})}" class="btn btn-danger btn-sm" title="删除" onclick="return confirm('确定要删除该评论吗？')"><i class="fas fa-trash"></i></a>
+                            <form th:action="@{/comments/audit/{id}(id=${comment.commentId})}" method="post" style="display:inline">
+                                <input type="hidden" name="status" th:value="${comment.status == 'PUBLISHED' ? 'HIDDEN' : 'PUBLISHED'}">
+                                <button type="submit" class="btn btn-secondary btn-sm" th:title="${comment.status == 'PUBLISHED' ? '隐藏' : '发布'}">
+                                    <i th:class="${comment.status == 'PUBLISHED' ? 'fas fa-eye-slash' : 'fas fa-check'}"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${comments == null || comments.isEmpty()}">
+                        <td colspan="9" class="text-center text-muted">
+                            <i class="fas fa-inbox fa-2x mb-2"></i><br>暂无评论数据
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        <!-- 分页导航 -->
+        <nav th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/comments/list(page=${currentPage-1}, size=${pageSize}, keyword=${keyword}, status=${status}, petId=${petId}, userId=${userId})}">上一页</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/comments/list(page=${i}, size=${pageSize}, keyword=${keyword}, status=${status}, petId=${petId}, userId=${userId})}" th:text="${i}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/comments/list(page=${currentPage+1}, size=${pageSize}, keyword=${keyword}, status=${status}, petId=${petId}, userId=${userId})}">下一页</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<script th:inline="javascript">
+    function toggleAll(source) {
+        const checkboxes = document.getElementsByName('idsChk');
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = source.checked;
+        }
+    }
+    function batchAudit(status) {
+        const checked = Array.from(document.getElementsByName('idsChk')).filter(c => c.checked).map(c => c.value);
+        if (checked.length === 0) {
+            alert('请先选择要操作的评论');
+            return;
+        }
+        document.getElementById('batchIds').value = checked.join(',');
+        document.getElementById('batchStatus').value = status;
+        document.getElementById('batchForm').submit();
+    }
+</script>
+</body>
+</html> 

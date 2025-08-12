@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布局保护测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="/js/layout-protection.js"></script>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="bi bi-heart-fill me-2"></i>宠物领养系统 - 布局测试
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#"><i class="bi bi-house-door"></i> 首页</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="text-light welcome-message">
+                    <i class="bi bi-person-circle"></i> 欢迎, 测试用户
+                    <span class="badge bg-primary ms-2">管理员</span>
+                </span>
+                <a href="/users/logout" class="btn btn-outline-light ms-3">
+                    <i class="bi bi-box-arrow-right"></i> 退出
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 侧边栏目录 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="bi bi-speedometer2 me-2"></i> 仪表盘
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-paw me-2"></i> 宠物管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-people me-2"></i> 用户管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-file-earmark-text me-2"></i> 领养申请
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-tags me-2"></i> 分类管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-diagram-3 me-2"></i> 品种管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-chat-left-text me-2"></i> 评论管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-tag me-2"></i> 标签管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-bar-chart me-2"></i> 数据分析
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-gear me-2"></i> 系统设置
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="col-md-10 main-content" id="mainContent">
+            <h2>布局保护测试页面</h2>
+            <p>这个页面用于测试侧边栏和导航栏的布局保护功能。</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>测试按钮</h5>
+                        </div>
+                        <div class="card-body">
+                            <button class="btn btn-danger" onclick="testHideSidebar()">尝试隐藏侧边栏</button>
+                            <button class="btn btn-danger" onclick="testHideNavbar()">尝试隐藏导航栏</button>
+                            <button class="btn btn-success" onclick="testShowElements()">强制显示元素</button>
+                            <button class="btn btn-info" onclick="checkElementStatus()">检查元素状态</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>状态信息</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="statusInfo">
+                                <p>侧边栏状态: <span id="sidebarStatus">检查中...</span></p>
+                                <p>导航栏状态: <span id="navbarStatus">检查中...</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>测试说明</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>点击"尝试隐藏侧边栏"按钮会尝试隐藏侧边栏，但应该被保护机制阻止</li>
+                                <li>点击"尝试隐藏导航栏"按钮会尝试隐藏导航栏，但应该被保护机制阻止</li>
+                                <li>点击"强制显示元素"按钮会强制显示所有元素</li>
+                                <li>点击"检查元素状态"按钮会检查当前元素的状态</li>
+                                <li>侧边栏和导航栏应该始终保持可见，无论点击什么按钮</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 测试隐藏侧边栏
+    function testHideSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) {
+            sidebar.style.display = 'none';
+            sidebar.classList.add('d-none');
+            console.log('尝试隐藏侧边栏');
+            setTimeout(checkElementStatus, 100);
+        }
+    }
+    
+    // 测试隐藏导航栏
+    function testHideNavbar() {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            navbar.style.display = 'none';
+            navbar.classList.add('d-none');
+            console.log('尝试隐藏导航栏');
+            setTimeout(checkElementStatus, 100);
+        }
+    }
+    
+    // 强制显示元素
+    function testShowElements() {
+        if (window.layoutProtection) {
+            window.layoutProtection.forceShowElements();
+            console.log('强制显示元素');
+            setTimeout(checkElementStatus, 100);
+        }
+    }
+    
+    // 检查元素状态
+    function checkElementStatus() {
+        const sidebar = document.querySelector('.sidebar');
+        const navbar = document.querySelector('.navbar');
+        
+        let sidebarStatus = '未知';
+        let navbarStatus = '未知';
+        
+        if (sidebar) {
+            const isVisible = sidebar.style.display !== 'none' && 
+                             !sidebar.classList.contains('d-none') && 
+                             sidebar.style.visibility !== 'hidden';
+            sidebarStatus = isVisible ? '可见' : '隐藏';
+        }
+        
+        if (navbar) {
+            const isVisible = navbar.style.display !== 'none' && 
+                             !navbar.classList.contains('d-none') && 
+                             navbar.style.visibility !== 'hidden';
+            navbarStatus = isVisible ? '可见' : '隐藏';
+        }
+        
+        document.getElementById('sidebarStatus').textContent = sidebarStatus;
+        document.getElementById('navbarStatus').textContent = navbarStatus;
+        
+        console.log('侧边栏状态:', sidebarStatus);
+        console.log('导航栏状态:', navbarStatus);
+    }
+    
+    // 页面加载完成后检查状态
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(checkElementStatus, 1000);
+    });
+</script>
+</body>
+</html> 

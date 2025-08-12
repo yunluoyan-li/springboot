@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="238ab5ff-4824-4874-ac49-4365e2566a0c" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="2z2ee1bkVarCOwAInSmfKsOAbeF" />
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\wpd\code\pet_adoption_db\src\main\resources" />
+      <recent name="C:\wpd\code\pet_adoption_db" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\wpd\code\pet_adoption_db-将用户和宠物管理再次整和好-2025-7-2\pet_adoption_db\问题修复文档" />
+      <recent name="C:\wpd\code\pet_adoption_db-将用户和宠物管理再次整和好-2025-7-2\pet_adoption_db\修改数据库的sql语句" />
+      <recent name="C:\wpd\code\pet_adoption_db\src\main\resources\templates\user" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.PetAdoptionApplication">
+    <configuration name="PetCrawler" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.petadoption.util.PetCrawler" />
+      <module name="pet_adoption_db" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.petadoption.util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PetAdoptionApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="pet_adoption_db" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.petadoption.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.petadoption.PetAdoptionApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.PetAdoptionApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="238ab5ff-4824-4874-ac49-4365e2566a0c" name="Default Changelist" comment="" />
+      <created>1750933686882</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1750933686882</updated>
+      <workItem from="1750933691583" duration="1301000" />
+      <workItem from="1750983794641" duration="29548000" />
+      <workItem from="1751091579676" duration="594000" />
+      <workItem from="1751242798566" duration="8273000" />
+      <workItem from="1751253077306" duration="557000" />
+      <workItem from="1751259081273" duration="6109000" />
+      <workItem from="1751328301410" duration="3456000" />
+      <workItem from="1751344557585" duration="5826000" />
+      <workItem from="1751360414772" duration="9333000" />
+      <workItem from="1751414993995" duration="17715000" />
+      <workItem from="1751442287092" duration="237000" />
+      <workItem from="1751442543657" duration="2082000" />
+      <workItem from="1751445171487" duration="13325000" />
+      <workItem from="1751882507896" duration="86000" />
+      <workItem from="1751890320064" duration="554000" />
+      <workItem from="1751900895806" duration="38000" />
+      <workItem from="1751900951971" duration="62000" />
+      <workItem from="1751935901910" duration="243000" />
+      <workItem from="1752082003846" duration="263000" />
+      <workItem from="1752082524123" duration="49000" />
+      <workItem from="1752110552565" duration="2160000" />
+      <workItem from="1752134553992" duration="2407000" />
+      <workItem from="1753333209168" duration="2688000" />
+      <workItem from="1754035592156" duration="863000" />
+      <workItem from="1754992210985" duration="657000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+</project>

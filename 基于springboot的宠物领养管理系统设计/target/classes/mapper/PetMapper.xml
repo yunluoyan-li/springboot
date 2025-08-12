@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.PetDao">
+    <!-- 宠物品种结果映射 -->
+    <resultMap id="petBreedResultMap" type="com.example.petadoption.model.PetBreed">
+        <id property="breedId" column="breed_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="breedName" column="breed_name"/>
+        <result property="origin" column="origin"/>
+        <result property="lifeSpan" column="life_span"/>
+        <result property="temperament" column="temperament"/>
+        <result property="careLevel" column="care_level"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="searchKeywords" column="search_keywords"/>
+    </resultMap>
+
+    <!-- 基础宠物结果映射 -->
+    <resultMap id="petResultMap" type="com.example.petadoption.model.Pet">
+        <id property="petId" column="pet_id"/>
+        <result property="breedId" column="breed_id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <result property="gender" column="gender"/>
+        <result property="color" column="color"/>
+        <result property="size" column="size"/>
+        <result property="healthStatus" column="health_status"/>
+        <result property="description" column="description"/>
+        <result property="story" column="story"/>
+        <result property="status" column="status"/>
+        <result property="source" column="source"/>
+        <result property="crawlerDataId" column="crawler_data_id"/>
+        <result property="featured" column="featured"/>
+        <result property="viewCount" column="view_count"/>
+
+        <!-- 关联宠物图片 -->
+        <collection property="images" ofType="com.example.petadoption.model.PetImage">
+            <id property="imageId" column="image_id"/>
+            <result property="petId" column="image_pet_id"/>
+            <result property="imageUrl" column="image_url"/>
+            <result property="isPrimary" column="is_primary"/>
+            <result property="displayOrder" column="display_order"/>
+            <result property="createdAt" column="created_at"/>
+        </collection>
+
+        <!-- 关联领养申请 -->
+        <collection property="applications" ofType="com.example.petadoption.model.AdoptionApplication">
+            <id property="applicationId" column="application_id"/>
+            <result property="petId" column="app_pet_id"/>
+            <result property="userId" column="user_id"/>
+            <result property="applicationText" column="application_text"/>
+            <result property="homeDescription" column="home_description"/>
+            <result property="experience" column="experience"/>
+            <result property="status" column="status"/>
+            <result property="adminNotes" column="admin_notes"/>
+            <result property="responseDate" column="response_date"/>
+            <result property="createdAt" column="created_at"/>
+        </collection>
+    </resultMap>
+
+    <!-- 包含品种信息的宠物结果映射，继承基础映射 -->
+    <resultMap id="petResultMapWithBreed" type="com.example.petadoption.model.Pet" extends="petResultMap">
+        <association property="breed" javaType="com.example.petadoption.model.Pet$Breed">
+            <id property="breedId" column="breed_id"/>
+            <result property="name" column="breed_name"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询所有宠物，包含品种、图片和领养申请信息 -->
+    <select id="findAll" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order,
+            aa.application_id, aa.pet_id AS app_pet_id, aa.user_id, aa.application_text,
+            aa.home_description, aa.experience, aa.status, aa.admin_notes, aa.response_date
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        LEFT JOIN
+            adoption_applications aa ON p.pet_id = aa.pet_id
+    </select>
+
+    <!-- 插入新宠物信息 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="petId">
+        INSERT INTO pets (breed_id, name, age, gender, color, size, health_status, 
+                         description, story, status)
+        VALUES (#{breedId}, #{name}, #{age}, #{gender}, #{color}, #{size}, #{healthStatus},
+                #{description}, #{story}, #{status})
+    </insert>
+
+    <!-- 根据宠物ID查询宠物信息，包含品种、图片和领养申请信息 -->
+    <select id="getPetById" parameterType="Long" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order,
+            aa.application_id, aa.pet_id AS app_pet_id, aa.user_id, aa.application_text,
+            aa.home_description, aa.experience, aa.status, aa.admin_notes, aa.response_date
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        LEFT JOIN
+            adoption_applications aa ON p.pet_id = aa.pet_id
+        WHERE p.pet_id = #{id}
+    </select>
+
+    <!-- 更新宠物信息 -->
+    <update id="updatePet" parameterType="com.example.petadoption.model.Pet">
+        UPDATE pets
+        SET breed_id = #{breedId},
+            name = #{name},
+            age = #{age},
+            gender = #{gender},
+            color = #{color},
+            size = #{size},
+            health_status = #{healthStatus},
+            description = #{description},
+            story = #{story},
+            status = #{status}
+        WHERE pet_id = #{petId}
+    </update>
+
+    <!-- 根据宠物ID删除宠物信息 -->
+    <delete id="deletePet" parameterType="Long">
+        DELETE FROM pets WHERE pet_id = #{id}
+    </delete>
+
+    <!-- 查询待领养宠物数量 -->
+    <select id="getAvailablePetsCount" resultType="int">
+        SELECT COUNT(*) FROM pets WHERE status = 'AVAILABLE'
+    </select>
+    
+    <!-- 查询已领养宠物数量 -->
+    <select id="getAdoptedPetsCount" resultType="int">
+        SELECT COUNT(*) FROM pets WHERE status = 'ADOPTED'
+    </select>
+    
+    <!-- 查询待审核宠物数量 -->
+    <select id="getPendingPetsCount" resultType="int">
+        SELECT COUNT(*) FROM pets WHERE status = 'PENDING'
+    </select>
+
+    <!-- 查询所有宠物品种 -->
+    <select id="getAllPetBreeds" resultMap="petBreedResultMap">
+        SELECT
+            breed_id, category_id, breed_name, origin, life_span,
+            temperament, care_level, description, created_at
+        FROM pet_breeds
+    </select>
+
+    <select id="findAllBreeds" resultMap="petBreedResultMap">
+    SELECT * FROM pet_breeds
+</select>
+
+    <!-- 数据分析相关方法 -->
+    
+    <!-- 查询总宠物数量 -->
+    <select id="getTotalPetsCount" resultType="int">
+        SELECT COUNT(*) FROM pets
+    </select>
+
+    <!-- 查询宠物状态分布 -->
+    <select id="getPetStatusDistribution" resultType="java.util.Map">
+        SELECT status as label, COUNT(*) as value FROM pets GROUP BY status
+    </select>
+
+    <!-- 查询宠物性别分布 -->
+    <select id="getPetGenderDistribution" resultType="java.util.Map">
+        SELECT 
+            gender as label,
+            COUNT(*) as value
+        FROM pets 
+        GROUP BY gender
+    </select>
+    
+    <!-- 条件搜索宠物 -->
+    <select id="searchPets" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (p.name LIKE CONCAT('%', #{keyword}, '%') 
+                     OR p.description LIKE CONCAT('%', #{keyword}, '%')
+                     OR p.color LIKE CONCAT('%', #{keyword}, '%')
+                     OR pb.breed_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="breedId != null">
+                AND p.breed_id = #{breedId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+            <if test="gender != null and gender != ''">
+                AND p.gender = #{gender}
+            </if>
+        </where>
+        ORDER BY p.pet_id ASC
+    </select>
+    
+    <!-- 根据品种查询宠物 -->
+    <select id="getPetsByBreed" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        WHERE p.breed_id = #{breedId}
+        ORDER BY p.pet_id ASC
+    </select>
+    
+    <!-- 根据状态查询宠物 -->
+    <select id="getPetsByStatus" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        WHERE p.status = #{status}
+        ORDER BY p.pet_id ASC
+    </select>
+    
+    <!-- 根据性别查询宠物 -->
+    <select id="getPetsByGender" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        WHERE p.gender = #{gender}
+        ORDER BY p.pet_id ASC
+    </select>
+    
+    <!-- 分页查询宠物 -->
+    <select id="getPetsWithPagination" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        ORDER BY p.pet_id ASC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <!-- 获取筛选后的宠物数量 -->
+    <select id="getFilteredPetsCount" resultType="int">
+        SELECT COUNT(*)
+        FROM pets p
+        LEFT JOIN pet_breeds pb ON p.breed_id = pb.breed_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (p.name LIKE CONCAT('%', #{keyword}, '%') 
+                     OR p.description LIKE CONCAT('%', #{keyword}, '%')
+                     OR p.color LIKE CONCAT('%', #{keyword}, '%')
+                     OR pb.breed_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="breedId != null">
+                AND p.breed_id = #{breedId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+            <if test="gender != null and gender != ''">
+                AND p.gender = #{gender}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 支持分页的条件搜索宠物 -->
+    <select id="searchPetsWithPagination" resultMap="petResultMapWithBreed">
+        SELECT
+            p.pet_id, p.breed_id, p.name, p.age, p.gender, p.color, p.size,
+            p.health_status, p.description, p.story, p.status, p.source,
+            p.crawler_data_id, p.featured, p.view_count,
+            pb.breed_name AS breed_name,
+            pi.image_id, pi.pet_id AS image_pet_id, pi.image_url, pi.is_primary, pi.display_order
+        FROM
+            pets p
+        LEFT JOIN
+            pet_breeds pb ON p.breed_id = pb.breed_id
+        LEFT JOIN
+            pet_images pi ON p.pet_id = pi.pet_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (p.name LIKE CONCAT('%', #{keyword}, '%') 
+                     OR p.description LIKE CONCAT('%', #{keyword}, '%')
+                     OR p.color LIKE CONCAT('%', #{keyword}, '%')
+                     OR pb.breed_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="breedId != null">
+                AND p.breed_id = #{breedId}
+            </if>
+            <if test="status != null and status != ''">
+                AND p.status = #{status}
+            </if>
+            <if test="gender != null and gender != ''">
+                AND p.gender = #{gender}
+            </if>
+        </where>
+        ORDER BY p.pet_id ASC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+</mapper>

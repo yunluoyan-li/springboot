@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单登录测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 登录测试</h1>
+        <p>这个页面直接调用API，不依赖任何外部文件。</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input type="text" id="username" value="admin" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码:</label>
+                <input type="password" id="password" value="123456" required>
+            </div>
+            
+            <button type="submit">🚀 测试登录</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        
+        <div style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 6px;">
+            <h3>📋 测试用户</h3>
+            <ul>
+                <li><strong>admin</strong> / 123456 (管理员)</li>
+                <li><strong>123456</strong> / 123456 (普通用户)</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            // 显示加载信息
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.innerHTML = '🔄 正在发送登录请求...';
+            
+            try {
+                console.log('=== 登录测试开始 ===');
+                console.log('用户名:', username);
+                console.log('密码:', password);
+                console.log('请求URL:', '/api/users/login');
+                
+                const requestBody = { username, password };
+                console.log('请求体:', JSON.stringify(requestBody, null, 2));
+                
+                const response = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(requestBody)
+                });
+                
+                console.log('响应状态:', response.status);
+                console.log('响应状态文本:', response.statusText);
+                
+                const data = await response.json();
+                console.log('响应数据:', data);
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+✅ 登录成功!
+
+📊 响应信息:
+状态码: ${response.status}
+状态文本: ${response.statusText}
+
+📋 响应数据:
+${JSON.stringify(data, null, 2)}
+
+🔍 调试信息:
+- 请求URL: /api/users/login
+- 请求方法: POST
+- 请求体: ${JSON.stringify(requestBody, null, 2)}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+❌ 登录失败!
+
+📊 错误信息:
+状态码: ${response.status}
+状态文本: ${response.statusText}
+错误消息: ${data.message || '未知错误'}
+
+📋 完整响应:
+${JSON.stringify(data, null, 2)}
+
+🔍 调试信息:
+- 请求URL: /api/users/login
+- 请求方法: POST
+- 请求体: ${JSON.stringify(requestBody, null, 2)}
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('请求失败:', error);
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+❌ 网络请求失败!
+
+🔍 错误详情:
+${error.message}
+
+💡 可能的原因:
+1. 应用程序未启动
+2. 网络连接问题
+3. CORS配置问题
+4. API路径错误
+
+🔧 解决建议:
+1. 确保应用程序正在运行 (http://localhost:8080)
+2. 检查浏览器控制台是否有错误信息
+3. 确认API路径是否正确 (/api/users/login)
+                `;
+            }
+        });
+        
+        // 页面加载时显示一些信息
+        console.log('页面加载完成');
+        console.log('当前页面URL:', window.location.href);
+        console.log('API测试URL:', window.location.origin + '/api/users/login');
+    </script>
+</body>
+</html> 

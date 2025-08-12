@@ -1,0 +1,215 @@
+-- 1. 创建数据库（如果不存在）
+CREATE DATABASE IF NOT EXISTS pet_adoption_db
+DEFAULT CHARACTER SET utf8
+DEFAULT COLLATE utf8_general_ci;
+
+-- 切换到新创建的数据库
+USE pet_adoption_db;
+-- 1. 用户表
+CREATE TABLE users (
+    user_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
+    password VARCHAR(100) NOT NULL COMMENT '加密密码',
+    email VARCHAR(100) NOT NULL UNIQUE COMMENT '邮箱',
+    phone VARCHAR(20) COMMENT '手机号',
+    avatar_url VARCHAR(255) COMMENT '头像URL',
+    address VARCHAR(255) COMMENT '地址',
+    role ENUM('ADMIN', 'STAFF', 'USER') NOT NULL DEFAULT 'USER' COMMENT '角色',
+    status ENUM('ACTIVE', 'INACTIVE', 'BANNED') DEFAULT 'ACTIVE' COMMENT '状态',
+    last_login DATETIME COMMENT '最后登录时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 2. 宠物分类表
+CREATE TABLE pet_categories (
+    category_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '分类ID',
+    name VARCHAR(50) NOT NULL COMMENT '分类名称',
+    slug VARCHAR(50) NOT NULL UNIQUE COMMENT 'URL友好名称',
+    description TEXT COMMENT '分类描述',
+    icon_url VARCHAR(255) COMMENT '分类图标',
+    display_order INT DEFAULT 0 COMMENT '显示顺序',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 3. 宠物品种表
+CREATE TABLE pet_breeds (
+    breed_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '品种ID',
+    category_id INT NOT NULL COMMENT '所属分类ID',
+    breed_name VARCHAR(100) NOT NULL COMMENT '品种名称',
+    origin VARCHAR(100) COMMENT '原产地',
+    life_span VARCHAR(50) COMMENT '平均寿命',
+    temperament TEXT COMMENT '性格特点',
+    care_level ENUM('LOW', 'MEDIUM', 'HIGH') COMMENT '照顾难度',
+    description TEXT COMMENT '品种描述',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    FOREIGN KEY (category_id) REFERENCES pet_categories(category_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 4. 宠物信息表
+CREATE TABLE pets (
+    pet_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '宠物ID',
+    breed_id INT COMMENT '品种ID',
+    name VARCHAR(100) NOT NULL COMMENT '宠物名字',
+    age INT COMMENT '年龄(月)',
+    gender ENUM('MALE', 'FEMALE', 'UNKNOWN') COMMENT '性别',
+    color VARCHAR(100) COMMENT '颜色',
+    size ENUM('SMALL', 'MEDIUM', 'LARGE') COMMENT '体型',
+    health_status ENUM('EXCELLENT', 'GOOD', 'FAIR', 'POOR') COMMENT '健康状况',
+
+    vaccination_status ENUM('FULL', 'PARTIAL', 'NONE') COMMENT '疫苗接种状态',//已在数据库中删除这列
+
+    sterilization_status TINYINT(1) DEFAULT 0 COMMENT '是否绝育',//已在数据库中删除这列
+
+    description TEXT COMMENT '详细描述',
+    story TEXT COMMENT '背景故事',
+
+    adoption_fee DECIMAL(10,2) COMMENT '领养费(无支付功能，仅展示)',//已在数据库中删除这列
+
+    status ENUM('AVAILABLE', 'PENDING', 'ADOPTED', 'UNAVAILABLE') DEFAULT 'AVAILABLE' COMMENT '领养状态',
+    source ENUM('SHELTER', 'RESCUE', 'OWNER', 'CRAWLER') COMMENT '来源',
+    crawler_data_id INT COMMENT '爬虫数据ID(关联爬取的数据)',
+    featured TINYINT(1) DEFAULT 0 COMMENT '是否推荐',
+    view_count INT DEFAULT 0 COMMENT '浏览次数',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',//已在数据库中删除这列
+    updated_at DATETIME COMMENT '更新时间',//已在数据库中删除这列
+    FOREIGN KEY (breed_id) REFERENCES pet_breeds(breed_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 5. 宠物图片表
+CREATE TABLE pet_images (
+    image_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '图片ID',
+    pet_id BIGINT NOT NULL COMMENT '宠物ID',
+    image_url VARCHAR(255) NOT NULL COMMENT '图片URL',
+    is_primary TINYINT(1) DEFAULT 0 COMMENT '是否主图',
+    display_order INT DEFAULT 0 COMMENT '显示顺序',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 6. 领养申请表
+CREATE TABLE adoption_applications (
+    application_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '申请ID',
+    pet_id BIGINT NOT NULL COMMENT '宠物ID',
+    user_id BIGINT NOT NULL COMMENT '申请人ID',
+    application_text TEXT NOT NULL COMMENT '申请理由',
+    home_description TEXT COMMENT '家庭环境描述',
+    experience TEXT COMMENT '养宠经验',
+    status ENUM('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED') DEFAULT 'PENDING' COMMENT '状态',
+    admin_notes TEXT COMMENT '管理员备注',
+    response_date DATETIME COMMENT '回复日期',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 7. 收藏表
+CREATE TABLE favorites (
+    favorite_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '收藏ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    pet_id BIGINT NOT NULL COMMENT '宠物ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id, pet_id) COMMENT '防止重复收藏'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 8. 评论表
+CREATE TABLE comments (
+    comment_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '评论ID',
+    pet_id BIGINT NOT NULL COMMENT '宠物ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    parent_id BIGINT COMMENT '父评论ID(用于回复)',
+    content TEXT NOT NULL COMMENT '评论内容',
+    status ENUM('PUBLISHED', 'HIDDEN', 'DELETED') DEFAULT 'PUBLISHED' COMMENT '状态',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES comments(comment_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 9. 标签表
+CREATE TABLE tags (
+    tag_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '标签ID',
+    name VARCHAR(50) NOT NULL COMMENT '标签名称',
+    slug VARCHAR(50) NOT NULL UNIQUE COMMENT 'URL友好名称',
+    color VARCHAR(20) COMMENT '标签颜色',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 10. 宠物标签关联表
+CREATE TABLE pet_tags (
+    pet_id BIGINT NOT NULL COMMENT '宠物ID',
+    tag_id INT NOT NULL COMMENT '标签ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (pet_id, tag_id),
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- 创建触发器来模拟ON UPDATE CURRENT_TIMESTAMP功能
+DELIMITER //
+CREATE TRIGGER update_users_timestamp BEFORE UPDATE ON users
+FOR EACH ROW SET NEW.updated_at = NOW();
+//
+CREATE TRIGGER update_pets_timestamp BEFORE UPDATE ON pets
+FOR EACH ROW SET NEW.updated_at = NOW();
+//
+DELIMITER ;
+
+-- 创建索引优化查询性能
+CREATE INDEX idx_pets_status ON pets(status);
+CREATE INDEX idx_pets_breed ON pets(breed_id);
+CREATE INDEX idx_applications_pet_user ON adoption_applications(pet_id, user_id);
+CREATE INDEX idx_comments_pet ON comments(pet_id);
+CREATE INDEX idx_favorites_user ON favorites(user_id);
+
+[users] 1---* [pets] (一个用户可以拥有多只宠物)
+[pets] *---1 [pet_breeds] (一只宠物属于一个品种)
+[pet_breeds] *---1 [pet_categories] (一个品种属于一个分类)
+[pets] 1---* [pet_images] (一只宠物可以有多张图片)
+[pets] 1---* [adoption_applications] (一只宠物可以有多条领养申请)
+[users] 1---* [adoption_applications] (一个用户可以提交多个领养申请)
+[pets] *---* [tags] via [pet_tags] (多对多关系：一个宠物可以有多个标签，一个标签可以对应多个宠物)
+[users] 1---* [favorites] (一个用户可以收藏多个宠物)
+[pets] 1---* [favorites] (一个宠物可以被多个用户收藏)
+[users] 1---* [comments] (一个用户可以发表多条评论)
+[pets] 1---* [comments] (一个宠物可以有多条评论)
+[comments] 1---* [comments] (自引用关系：评论可以回复评论)
+
+
++-------------+       +---------------+       +-------------+
+|             |       |               |       |             |
+|  pet_categories |<----|   pet_breeds   |----->|     pets     |
+|             |       |               |       |             |
++-------------+       +---------------+       +-------------+
+                                           /      |       \
+                                         /        |         \
+                                       /          |           \
++-------------+       +---------------+       +-------------+       +-------------+
+|             |       |               |       |             |       |             |
+|    tags     |<----->|   pet_tags    |<----->|    pets     |<----->| pet_images  |
+|             |       |               |       |             |       |             |
++-------------+       +---------------+       +-------------+       +-------------+
+                                           /      |       \
+                                         /        |         \
+                                       /          |           \
++-------------+       +---------------+       +-------------+       +-------------+
+|             |       |               |       |             |       |             |
+|   users     |<----->|  favorites    |<----->|    pets     |<----->|  comments   |
+|             |       |               |       |             |       |             |
++-------------+       +---------------+       +-------------+       +-------------+
+                                           /
+                                         /
+                                       /
++-------------------------------+
+|                               |
+|      adoption_applications    |
+|                               |
++-------------------------------+
+
+我还在数据库里面运行了：-- 1. 为pet_categories添加爬虫分类标识
+            ALTER TABLE pet_categories ADD COLUMN crawler_key VARCHAR(50) COMMENT '爬虫分类标识（如dogs/cats）';
+
+            -- 2. 为pet_breeds添加品种关键词（用于模糊匹配）
+            ALTER TABLE pet_breeds ADD COLUMN search_keywords VARCHAR(255) COMMENT '品种搜索关键词（逗号分隔）';

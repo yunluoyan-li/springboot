@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单数据分析测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>简单数据分析测试</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>基础统计测试</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${basicStats != null}" class="test-result success">
+                            <p><strong>总宠物数量:</strong> <span th:text="${basicStats.totalPets}">0</span></p>
+                            <p><strong>待领养宠物:</strong> <span th:text="${basicStats.availablePets}">0</span></p>
+                            <p><strong>注册用户:</strong> <span th:text="${basicStats.totalUsers}">0</span></p>
+                            <p><strong>总申请数量:</strong> <span th:text="${basicStats.totalApplications}">0</span></p>
+                            <p><strong>待审核申请:</strong> <span th:text="${basicStats.pendingApplications}">0</span></p>
+                            <p><strong>成功领养:</strong> <span th:text="${basicStats.successfulAdoptions}">0</span></p>
+                            <p><strong>领养转化率:</strong> <span th:text="${basicStats.adoptionRate}">0</span>%</p>
+                        </div>
+                        <div th:if="${basicStats == null}" class="test-result error">
+                            <p>基础统计数据获取失败</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>图表数据测试</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${petStatusData != null and !#lists.isEmpty(petStatusData)}" class="test-result success">
+                            <p><strong>宠物状态分布:</strong> 获取成功 (<span th:text="${#lists.size(petStatusData)}">0</span> 项)</p>
+                        </div>
+                        <div th:if="${petStatusData == null or #lists.isEmpty(petStatusData)}" class="test-result error">
+                            <p>宠物状态分布数据获取失败</p>
+                        </div>
+                        
+                        <div th:if="${petGenderData != null and !#lists.isEmpty(petGenderData)}" class="test-result success">
+                            <p><strong>宠物性别分布:</strong> 获取成功 (<span th:text="${#lists.size(petGenderData)}">0</span> 项)</p>
+                        </div>
+                        <div th:if="${petGenderData == null or #lists.isEmpty(petGenderData)}" class="test-result error">
+                            <p>宠物性别分布数据获取失败</p>
+                        </div>
+                        
+                        <div th:if="${userRoleData != null and !#lists.isEmpty(userRoleData)}" class="test-result success">
+                            <p><strong>用户角色分布:</strong> 获取成功 (<span th:text="${#lists.size(userRoleData)}">0</span> 项)</p>
+                        </div>
+                        <div th:if="${userRoleData == null or #lists.isEmpty(userRoleData)}" class="test-result error">
+                            <p>用户角色分布数据获取失败</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>分类数据测试</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${categoryStats != null and !#lists.isEmpty(categoryStats)}" class="test-result success">
+                            <p><strong>分类统计:</strong> 获取成功 (<span th:text="${#lists.size(categoryStats)}">0</span> 项)</p>
+                            <ul>
+                                <li th:each="category : ${categoryStats}">
+                                    <span th:text="${category.name}">分类名</span> - 
+                                    品种数量: <span th:text="${category.breedCount != null ? category.breedCount : 0}">0</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div th:if="${categoryStats == null or #lists.isEmpty(categoryStats)}" class="test-result error">
+                            <p>分类统计数据获取失败</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>错误信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${error != null}" class="test-result error">
+                            <p><strong>错误:</strong> <span th:text="${error}">无错误</span></p>
+                        </div>
+                        <div th:if="${error == null}" class="test-result success">
+                            <p>没有错误信息</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>测试操作</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="btn-group" role="group">
+                            <a href="/analytics" class="btn btn-primary">
+                                <i class="bi bi-bar-chart"></i> 访问数据分析页面
+                            </a>
+                            <a href="/test/analytics-test" class="btn btn-success">
+                                <i class="bi bi-bug"></i> 详细测试
+                            </a>
+                            <a href="/dashboard" class="btn btn-info">
+                                <i class="bi bi-speedometer2"></i> 返回仪表盘
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

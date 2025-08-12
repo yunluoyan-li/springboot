@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.UserDao">
+
+    <resultMap id="UserResultMap" type="com.example.petadoption.model.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="role" column="role"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, username, password, email, phone, address,
+        role, status, created_at, updated_at
+    </sql>
+
+    <!-- 查询所有用户 -->
+    <select id="findAll" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+    </select>
+
+    <!-- 根据ID查询用户 -->
+    <select id="findById" parameterType="Long" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 插入用户 -->
+    <insert id="insert" parameterType="com.example.petadoption.model.User" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO users (
+            username, password, email, phone, address,
+            role, status, created_at, updated_at
+        ) VALUES (
+            #{username}, #{password}, #{email}, #{phone}, #{address},
+            #{role}, #{status}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <insert id="register" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO users (
+            username, password, email, phone, address,
+            role, status, created_at, updated_at
+        ) VALUES (
+            #{username}, #{password}, #{email}, #{phone}, #{address},
+            'USER', 'ACTIVE', NOW(), NOW()
+        )
+    </insert>
+
+    <!-- 用户登录 -->
+    <select id="login" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE username = #{username} AND password = #{password}
+        AND status = 'ACTIVE'
+    </select>
+
+    <!-- 更新用户信息 -->
+    <update id="update" parameterType="com.example.petadoption.model.User">
+        UPDATE users
+        SET
+            username = #{username},
+            password = #{password},
+            email = #{email},
+            phone = #{phone},
+            address = #{address},
+            role = #{role},
+            status = #{status},
+            updated_at = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 删除用户 -->
+    <delete id="delete" parameterType="Long">
+        DELETE FROM users
+        WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="findByUsername" parameterType="String" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+    <!-- 根据邮箱查询用户 -->
+    <select id="findByEmail" parameterType="String" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <!-- 新增方法的 SQL 实现 -->
+    <select id="getAllUsers" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+    </select>
+
+    <select id="getUserById" parameterType="Long" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE user_id = #{id}
+    </select>
+
+    <update id="updateUser" parameterType="com.example.petadoption.model.User">
+        UPDATE users
+        SET
+            username = #{username},
+            password = #{password},
+            email = #{email},
+            phone = #{phone},
+            address = #{address},
+            role = #{role},
+            status = #{status},
+            updated_at = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="Long">
+        DELETE FROM users
+        WHERE user_id = #{id}
+    </delete>
+
+    <!-- 新增查询注册用户数量的 SQL -->
+    <select id="getRegisteredUsersCount" resultType="int">
+        SELECT COUNT(*) FROM users
+    </select>
+
+    <select id="isEmailExists" parameterType="String" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <!-- 数据分析相关方法 -->
+    
+    <!-- 查询用户角色分布 -->
+    <select id="getUserRoleDistribution" resultType="java.util.Map">
+        SELECT 
+            role as label,
+            COUNT(*) as value
+        FROM users 
+        GROUP BY role
+    </select>
+    
+    <!-- 条件搜索用户 -->
+    <select id="searchUsers" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (username LIKE CONCAT('%', #{keyword}, '%') 
+                     OR email LIKE CONCAT('%', #{keyword}, '%')
+                     OR phone LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="role != null and role != ''">
+                AND role = #{role}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 根据角色查询用户 -->
+    <select id="getUsersByRole" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE role = #{role}
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 根据状态查询用户 -->
+    <select id="getUsersByStatus" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        WHERE status = #{status}
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 分页查询用户 -->
+    <select id="getUsersWithPagination" resultMap="UserResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM users
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    
+    <!-- 获取总用户数 -->
+    <select id="getTotalUserCount" resultType="int">
+        SELECT COUNT(*) FROM users
+    </select>
+    
+    <!-- 获取筛选后的用户数量 -->
+    <select id="getFilteredUserCount" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (username LIKE CONCAT('%', #{keyword}, '%') 
+                     OR email LIKE CONCAT('%', #{keyword}, '%')
+                     OR phone LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="role != null and role != ''">
+                AND role = #{role}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper>

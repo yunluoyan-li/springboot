@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简化数据分析 - 宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1>简化数据分析页面</h1>
+    <p>这个页面用于测试图表显示问题。</p>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>宠物状态分布</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="petStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>宠物性别分布</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="petGenderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>用户角色分布</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="userRoleChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>宠物品种统计</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="petBreedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>领养申请趋势</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="adoptionTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <button class="btn btn-primary" onclick="debugData()">调试数据</button>
+        <button class="btn btn-secondary" onclick="location.reload()">刷新页面</button>
+        <a href="/analytics" class="btn btn-success">返回完整版</a>
+    </div>
+    
+    <div id="debugResult" class="mt-3"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('简化数据分析页面加载完成');
+    initializeCharts();
+});
+
+function initializeCharts() {
+    console.log('开始初始化图表...');
+    
+    // 获取后端传递的数据，确保不为null
+    let petStatusData = /*[[${petStatusData}]]*/ [];
+    let petGenderData = /*[[${petGenderData}]]*/ [];
+    let userRoleData = /*[[${userRoleData}]]*/ [];
+    let petBreedData = /*[[${petBreedData}]]*/ [];
+    let adoptionTrendData = /*[[${adoptionTrendData}]]*/ [];
+    // 防止为null
+    petStatusData = petStatusData || [];
+    petGenderData = petGenderData || [];
+    userRoleData = userRoleData || [];
+    petBreedData = petBreedData || [];
+    adoptionTrendData = adoptionTrendData || [];
+    
+    console.log('获取到的数据:', {
+        petStatusData,
+        petGenderData,
+        userRoleData,
+        petBreedData,
+        adoptionTrendData
+    });
+    
+    // 检查Chart.js
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js 未加载！');
+        document.getElementById('debugResult').innerHTML = 
+            '<div class="alert alert-danger">❌ Chart.js 未加载！</div>';
+        return;
+    }
+    
+    console.log('Chart.js 版本:', Chart.version);
+    
+    try {
+        // 宠物状态分布饼图
+        const petStatusCtx = document.getElementById('petStatusChart');
+        if (petStatusCtx) {
+            new Chart(petStatusCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: petStatusData.length > 0 ? petStatusData.map(item => item.label) : ['可领养', '待审核', '已领养', '不可用'],
+                    datasets: [{
+                        data: petStatusData.length > 0 ? petStatusData.map(item => item.value) : [120, 30, 80, 20],
+                        backgroundColor: [
+                            '#28a745',
+                            '#ffc107',
+                            '#17a2b8',
+                            '#dc3545'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            console.log('宠物状态图表创建成功');
+        }
+        
+        // 宠物性别分布饼图
+        const petGenderCtx = document.getElementById('petGenderChart');
+        if (petGenderCtx) {
+            new Chart(petGenderCtx.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: petGenderData.length > 0 ? petGenderData.map(item => item.label) : ['公', '母', '未知'],
+                    datasets: [{
+                        data: petGenderData.length > 0 ? petGenderData.map(item => item.value) : [100, 90, 20],
+                        backgroundColor: [
+                            '#007bff',
+                            '#e83e8c',
+                            '#6c757d'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            console.log('宠物性别图表创建成功');
+        }
+        
+        // 用户角色分布饼图
+        const userRoleCtx = document.getElementById('userRoleChart');
+        if (userRoleCtx) {
+            new Chart(userRoleCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: userRoleData.length > 0 ? userRoleData.map(item => item.label) : ['管理员', '员工', '普通用户'],
+                    datasets: [{
+                        data: userRoleData.length > 0 ? userRoleData.map(item => item.value) : [5, 15, 180],
+                        backgroundColor: [
+                            '#dc3545',
+                            '#ffc107',
+                            '#28a745'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            console.log('用户角色图表创建成功');
+        }
+        
+        // 宠物品种统计柱状图
+        const petBreedCtx = document.getElementById('petBreedChart');
+        if (petBreedCtx) {
+            new Chart(petBreedCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: petBreedData.length > 0 ? petBreedData.map(item => item.label) : ['金毛', '拉布拉多', '哈士奇', '泰迪', '比熊'],
+                    datasets: [{
+                        label: '数量',
+                        data: petBreedData.length > 0 ? petBreedData.map(item => item.value) : [25, 30, 20, 35, 15],
+                        backgroundColor: [
+                            '#007bff',
+                            '#28a745',
+                            '#ffc107',
+                            '#dc3545',
+                            '#6f42c1'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            console.log('宠物品种图表创建成功');
+        }
+        
+        // 领养申请趋势线图
+        const adoptionTrendCtx = document.getElementById('adoptionTrendChart');
+        if (adoptionTrendCtx) {
+            new Chart(adoptionTrendCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: adoptionTrendData.length > 0 ? adoptionTrendData.map(item => item.month) : ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '申请数量',
+                        data: adoptionTrendData.length > 0 ? adoptionTrendData.map(item => item.count) : [15, 18, 22, 25, 20, 28],
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            console.log('领养趋势图表创建成功');
+        }
+        
+        document.getElementById('debugResult').innerHTML = 
+            '<div class="alert alert-success">✅ 所有图表创建成功！</div>';
+            
+    } catch (error) {
+        console.error('创建图表时出错:', error);
+        document.getElementById('debugResult').innerHTML = 
+            '<div class="alert alert-danger">❌ 创建图表时出错: ' + error.message + '</div>';
+    }
+}
+
+function debugData() {
+    console.log('=== 调试数据 ===');
+    
+    // 获取后端传递的数据
+    const petStatusData = /*[[${petStatusData}]]*/ [];
+    const petGenderData = /*[[${petGenderData}]]*/ [];
+    const userRoleData = /*[[${userRoleData}]]*/ [];
+    const petBreedData = /*[[${petBreedData}]]*/ [];
+    const adoptionTrendData = /*[[${adoptionTrendData}]]*/ [];
+    
+    console.log('宠物状态数据:', petStatusData);
+    console.log('宠物性别数据:', petGenderData);
+    console.log('用户角色数据:', userRoleData);
+    console.log('宠物品种数据:', petBreedData);
+    console.log('领养趋势数据:', adoptionTrendData);
+    
+    // 检查Chart.js
+    console.log('Chart.js 是否可用:', typeof Chart !== 'undefined');
+    if (typeof Chart !== 'undefined') {
+        console.log('Chart.js 版本:', Chart.version);
+    }
+    
+    alert('调试信息已输出到控制台，请按F12查看！');
+}
+</script>
+
+</body>
+</html> 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的领养申请</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-heart"></i> 我的领养申请</h2>
+                    <a href="/pets/list" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 申请领养新宠物
+                    </a>
+                </div>
+
+                <!-- 消息提示 -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- 申请列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> 申请记录</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(applications)}" class="text-center py-4">
+                            <i class="fas fa-heart-broken fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">您还没有提交过领养申请</p>
+                            <a href="/pets/list" class="btn btn-primary">
+                                <i class="fas fa-search"></i> 浏览可领养宠物
+                            </a>
+                        </div>
+                        
+                        <div th:if="${!#lists.isEmpty(applications)}" class="row">
+                            <div th:each="app : ${applications}" class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <h6 class="card-title">申请 #<span th:text="${app.applicationId}"></span></h6>
+                                            <span th:if="${app.status == 'PENDING'}" class="badge bg-warning">待审核</span>
+                                            <span th:if="${app.status == 'APPROVED'}" class="badge bg-success">已通过</span>
+                                            <span th:if="${app.status == 'REJECTED'}" class="badge bg-danger">已拒绝</span>
+                                        </div>
+                                        
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar"></i> 
+                                                申请时间：<span th:text="${#dates.format(app.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                            </small>
+                                        </p>
+                                        
+                                        <p class="card-text">
+                                            <strong>宠物ID：</strong><span th:text="${app.petId}"></span>
+                                        </p>
+                                        
+                                        <div th:if="${app.status != 'PENDING'}" class="mt-3">
+                                            <p class="card-text">
+                                                <strong>审核时间：</strong>
+                                                <span th:text="${app.responseDate != null ? #dates.format(app.responseDate, 'yyyy-MM-dd HH:mm') : '未设置'}"></span>
+                                            </p>
+                                            <p th:if="${app.adminNotes != null && !app.adminNotes.isEmpty()}" class="card-text">
+                                                <strong>审核意见：</strong><br>
+                                                <span th:text="${app.adminNotes}"></span>
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="mt-3">
+                                            <a th:href="@{/adoption/detail/{id}(id=${app.applicationId})}" 
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i> 查看详情
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

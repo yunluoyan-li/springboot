@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>品种字段测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>品种字段测试</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h3>品种列表</h3>
+            <div th:if="${breeds != null and !breeds.empty}">
+                <div th:each="breed : ${breeds}" class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${breed.breedName}">品种名</h5>
+                        <p class="card-text">
+                            <strong>ID:</strong> <span th:text="${breed.breedId}"></span><br>
+                            <strong>分类ID:</strong> <span th:text="${breed.categoryId}"></span><br>
+                            <strong>原产地:</strong> <span th:text="${breed.origin}"></span><br>
+                            <strong>寿命:</strong> <span th:text="${breed.lifeSpan}"></span><br>
+                            <strong>性格:</strong> <span th:text="${breed.temperament}"></span><br>
+                            <strong>护理难度:</strong> <span th:text="${breed.careLevel}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${breeds == null or breeds.empty}">
+                <p class="text-warning">没有找到品种数据</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>宠物列表</h3>
+            <div th:if="${pets != null and !pets.empty}">
+                <div th:each="pet : ${pets}" class="card mb-2">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${pet.name}">宠物名</h5>
+                        <p class="card-text">
+                            <strong>ID:</strong> <span th:text="${pet.petId}"></span><br>
+                            <strong>品种:</strong> <span th:text="${pet.breed != null ? pet.breed.name : '未知'}"></span><br>
+                            <strong>状态:</strong> <span th:text="${pet.status}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${pets == null or pets.empty}">
+                <p class="text-warning">没有找到宠物数据</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="/pets/list" class="btn btn-primary">返回宠物列表</a>
+        <a href="/test/database" class="btn btn-secondary">数据库测试</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

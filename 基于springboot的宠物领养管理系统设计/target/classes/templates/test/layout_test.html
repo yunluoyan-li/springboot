@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>布局测试页面</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0"><i class="fas fa-cog"></i> 布局测试页面</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>这是一个测试页面，用于验证布局模板是否正常工作。</p>
+                        <p>如果你能看到这个页面，并且左侧有侧边栏，顶部有导航栏，说明布局模板工作正常。</p>
+                        
+                        <div class="alert alert-info">
+                            <h5>测试项目：</h5>
+                            <ul>
+                                <li>✓ 顶部导航栏应该固定显示</li>
+                                <li>✓ 左侧侧边栏应该固定显示</li>
+                                <li>✓ 内容区域应该在右侧显示</li>
+                                <li>✓ 页面应该响应式布局</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>导航测试</h5>
+                                        <a href="/pets/list" class="btn btn-primary me-2">宠物列表</a>
+                                        <a href="/users/list" class="btn btn-success me-2">用户列表</a>
+                                        <a href="/pets/add" class="btn btn-warning me-2">添加宠物</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>当前页面信息</h5>
+                                        <p><strong>页面路径：</strong> <span id="currentPath"></span></p>
+                                        <p><strong>窗口宽度：</strong> <span id="windowWidth"></span></p>
+                                        <p><strong>侧边栏宽度：</strong> <span id="sidebarWidth"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 显示当前页面信息
+    document.getElementById('currentPath').textContent = window.location.pathname;
+    document.getElementById('windowWidth').textContent = window.innerWidth + 'px';
+    
+    // 获取侧边栏宽度
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        document.getElementById('sidebarWidth').textContent = sidebar.offsetWidth + 'px';
+    }
+    
+    console.log('布局测试页面加载完成');
+    console.log('当前路径:', window.location.pathname);
+    console.log('侧边栏元素:', sidebar);
+});
+</script>
+</body>
+</html> 

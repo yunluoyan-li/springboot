@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>用户列表</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <h1 class="mb-4">用户列表</h1>
+        <a href="/users/add" class="btn btn-primary mb-3">新增用户</a>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户名123123</th>
+                <th>邮箱</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.userId}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <a th:href="@{/users/edit/{id}(id=${user.userId})}" class="btn btn-warning btn-sm">编辑</a>
+                    <a th:href="@{/users/delete/{id}(id=${user.userId})}" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除该用户吗？')">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

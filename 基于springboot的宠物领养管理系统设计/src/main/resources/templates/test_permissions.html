@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权限测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .user-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 权限测试页面</h1>
+        <p>这个页面用于测试用户权限控制功能。</p>
+        
+        <!-- 登录表单 -->
+        <div class="test-section">
+            <h3>📝 用户登录</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" value="admin" required>
+                </div>
+                <button type="submit">🚀 登录</button>
+            </form>
+        </div>
+        
+        <!-- 当前用户信息 -->
+        <div id="userInfo" class="user-info" style="display: none;">
+            <h3>👤 当前用户信息</h3>
+            <div id="userDetails"></div>
+        </div>
+        
+        <!-- 权限测试 -->
+        <div class="test-section">
+            <h3>🔍 权限测试</h3>
+            <button onclick="testGetCurrentUser()">获取当前用户信息</button>
+            <button onclick="testGetAllUsers()">获取所有用户（管理员功能）</button>
+            <button onclick="testUpdateUser()">更新用户信息</button>
+            <button onclick="testDeleteUser()">删除用户（管理员功能）</button>
+            <button onclick="testGetAllApplications()">获取所有申请（管理员功能）</button>
+            <button onclick="testGetMyApplications()">获取我的申请</button>
+        </div>
+        
+        <!-- 测试用户说明 -->
+        <div class="test-section">
+            <h3>📋 测试用户</h3>
+            <ul>
+                <li><strong>管理员用户:</strong> admin / admin (ADMIN角色)</li>
+                <li><strong>普通用户:</strong> 123456 / 123456 (USER角色)</li>
+            </ul>
+            <p><em>注意：请先执行 check_user_roles.sql 脚本确保用户角色正确设置</em></p>
+        </div>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+    
+    <script>
+        let currentUser = null;
+        
+        // 登录处理
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.user;
+                    showUserInfo();
+                    showResult('success', '登录成功', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '登录失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '登录失败', error.message);
+            }
+        });
+        
+        // 显示用户信息
+        function showUserInfo() {
+            if (currentUser) {
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('userDetails').innerHTML = `
+                    <p><strong>用户ID:</strong> ${currentUser.userId}</p>
+                    <p><strong>用户名:</strong> ${currentUser.username}</p>
+                    <p><strong>邮箱:</strong> ${currentUser.email}</p>
+                    <p><strong>角色:</strong> ${currentUser.role}</p>
+                    <p><strong>状态:</strong> ${currentUser.status}</p>
+                `;
+            }
+        }
+        
+        // 显示结果
+        function showResult(type, title, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `
+                <h4>${title}</h4>
+                <pre>${message}</pre>
+            `;
+        }
+        
+        // 测试获取当前用户信息
+        async function testGetCurrentUser() {
+            try {
+                const response = await fetch('/api/users/current', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('success', '获取当前用户成功', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '获取当前用户失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '请求失败', error.message);
+            }
+        }
+        
+        // 测试获取所有用户（管理员功能）
+        async function testGetAllUsers() {
+            try {
+                const response = await fetch('/api/users', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('success', '获取所有用户成功（管理员权限）', JSON.stringify(data, null, 2));
+                } else if (response.status === 403) {
+                    showResult('warning', '权限不足（需要管理员权限）', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '获取所有用户失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '请求失败', error.message);
+            }
+        }
+        
+        // 测试更新用户信息
+        async function testUpdateUser() {
+            if (!currentUser) {
+                showResult('warning', '请先登录', '需要登录后才能测试此功能');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/users/${currentUser.userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        username: currentUser.username,
+                        email: currentUser.email
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('success', '更新用户信息成功', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '更新用户信息失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '请求失败', error.message);
+            }
+        }
+        
+        // 测试删除用户（管理员功能）
+        async function testDeleteUser() {
+            try {
+                const response = await fetch('/api/users/999', { // 使用不存在的用户ID
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (response.status === 403) {
+                    showResult('warning', '权限不足（需要管理员权限）', JSON.stringify(data, null, 2));
+                } else if (response.ok) {
+                    showResult('success', '删除用户成功（管理员权限）', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '删除用户失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '请求失败', error.message);
+            }
+        }
+        
+        // 测试获取所有申请（管理员功能）
+        async function testGetAllApplications() {
+            try {
+                const response = await fetch('/api/adoption/applications', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('success', '获取所有申请成功（管理员权限）', JSON.stringify(data, null, 2));
+                } else if (response.status === 403) {
+                    showResult('warning', '权限不足（需要管理员权限）', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '获取所有申请失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '请求失败', error.message);
+            }
+        }
+        
+        // 测试获取我的申请
+        async function testGetMyApplications() {
+            try {
+                const response = await fetch('/api/adoption/my-applications', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('success', '获取我的申请成功', JSON.stringify(data, null, 2));
+                } else if (response.status === 401) {
+                    showResult('warning', '未登录', JSON.stringify(data, null, 2));
+                } else {
+                    showResult('error', '获取我的申请失败', JSON.stringify(data, null, 2));
+                }
+            } catch (error) {
+                showResult('error', '请求失败', error.message);
+            }
+        }
+    </script>
+</body>
+</html> 

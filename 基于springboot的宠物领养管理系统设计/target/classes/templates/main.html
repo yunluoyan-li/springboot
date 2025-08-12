@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物领养系统 - 管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/layout.css">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .welcome-message {
+            margin-right: 15px;
+        }
+        .pet-card {
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        .pet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .pet-img {
+            height: 200px;
+            object-fit: cover;
+        }
+        .dashboard-card {
+            border-left: 4px solid #0d6efd;
+        }
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .chart-container {
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .sidebar .nav-item {
+            margin-bottom: 5px;
+        }
+        .sidebar .nav-link {
+            font-weight: 500;
+            color: #333;
+            padding: 12px 20px;
+            border-radius: 0;
+            border-left: 3px solid transparent;
+        }
+        .sidebar .nav-link.active {
+            color: #0d6efd;
+            background-color: #e3f2fd;
+            border-left: 3px solid #0d6efd;
+        }
+        .sidebar .nav-link:hover {
+            color: #0d6efd;
+            background-color: #f8f9fa;
+            border-left: 3px solid #0d6efd;
+        }
+    </style>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入布局保护脚本 -->
+    <script src="/js/layout-protection.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 只为侧边栏链接添加AJAX点击事件，排除.no-ajax类
+            $('.sidebar .nav-link').on('click', function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var $link = $(this);
+                // 移除所有活动状态
+                $('.sidebar .nav-link').removeClass('active');
+                $link.addClass('active');
+                console.log('点击的链接地址:', url);
+                if (url) {
+                    $('#mainContent').html('<div class="text-center p-5"><div class="spinner-border" role="status"><span class="visually-hidden">加载中...</span></div><p class="mt-3">正在加载内容...</p></div>');
+                    $.ajax({
+                        url: url,
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        success: function(response) {
+                            console.log('内容加载成功');
+                            $('#mainContent').html(response);
+                            if (window.layoutProtection) {
+                                window.layoutProtection.forceShowElements();
+                            }
+                            if (url.indexOf('/analytics') !== -1) {
+                                console.log('检测到数据分析页面，准备初始化图表...');
+                                setTimeout(function() {
+                                    if (typeof window.initializeCharts === 'function') {
+                                        console.log('调用 initializeCharts 函数');
+                                        window.initializeCharts();
+                                    } else {
+                                        console.warn('initializeCharts 函数未找到');
+                                    }
+                                }, 100);
+                            }
+                            $('html, body').scrollTop(0);
+                        },
+                        error: function(error) {
+                            console.error('加载内容失败:', error);
+                            $('#mainContent').html('<div class="alert alert-danger m-3">加载内容失败，请重试。</div>');
+                        }
+                    });
+                }
+            });
+
+            // 添加宠物表单提交事件
+            $('#addPetForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '/pets/add',
+                    method: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        alert('宠物添加成功');
+                        $('#addPetModal').modal('hide');
+                        // 重新加载宠物列表
+                        $.ajax({
+                            url: '/pets/list',
+                            method: 'GET',
+                            success: function(response) {
+                                $('#mainContent').html(response);
+                                // 确保布局保护脚本重新运行
+                                if (window.layoutProtection) {
+                                    window.layoutProtection.forceShowElements();
+                                }
+                            },
+                            error: function(error) {
+                                console.error('加载宠物列表失败:', error);
+                            }
+                        });
+                    },
+                    error: function(error) {
+                        console.error('添加宠物失败:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="bi bi-heart-fill me-2"></i>宠物领养系统
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#"><i class="bi bi-house-door"></i> 首页</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                    <span class="text-light welcome-message">
+                        <i class="bi bi-person-circle"></i> 欢迎, <span th:text="${session.loginUser}"></span>
+                        <span class="badge bg-primary ms-2" th:text="${session.userRole}"></span>
+                    </span>
+                <a th:href="@{/users/logout}" class="btn btn-outline-light ms-3">
+                    <i class="bi bi-box-arrow-right"></i> 退出
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 侧边栏目录 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i> 仪表盘
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pets/list">
+                        <i class="bi bi-paw me-2"></i> 宠物管理
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole == 'ADMIN'}">
+                    <a class="nav-link" href="/users/list">
+                        <i class="bi bi-people me-2"></i> 用户管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/adoption/list">
+                        <i class="bi bi-file-earmark-text me-2"></i> 领养申请
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole == 'ADMIN'}">
+                    <a class="nav-link" href="/categories/list">
+                        <i class="bi bi-tags me-2"></i> 分类管理
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole == 'ADMIN'}">
+                    <a class="nav-link" href="/breeds/list">
+                        <i class="bi bi-diagram-3 me-2"></i> 品种管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/comments/list">
+                        <i class="bi bi-chat-left-text me-2"></i> 评论管理
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole == 'ADMIN'}">
+                    <a class="nav-link" href="/tags/list">
+                        <i class="bi bi-tag me-2"></i> 标签管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/analytics">
+                        <i class="bi bi-bar-chart me-2"></i> 数据分析
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole == 'ADMIN'}">
+                    <a class="nav-link" href="/system/info">
+                        <i class="bi bi-info-circle me-2"></i> 系统信息
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/favorites/list">
+                        <i class="bi bi-star me-2"></i> 收藏管理
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="col-md-10 main-content" id="mainContent">
+            <!-- 初始加载时显示仪表盘内容 -->
+            <div th:if="${availablePets != null}">
+                <!-- 仪表盘部分 -->
+                <section id="dashboard" class="mb-5">
+                    <h2 class="mb-4"><i class="bi bi-speedometer2"></i> 仪表盘</h2>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">待领养宠物</h5>
+                                    <h2 class="card-text" th:text="${availablePets}"></h2>
+                                    <p class="card-text text-success"><i class="bi bi-arrow-up"></i> 12% 较上月</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">新申请</h5>
+                                    <h2 class="card-text" th:text="${newApplications}"></h2>
+                                    <p class="card-text text-danger"><i class="bi bi-arrow-down"></i> 5% 较上周</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">注册用户</h5>
+                                    <h2 class="card-text" th:text="${registeredUsers}"></h2>
+                                    <p class="card-text text-success"><i class="bi bi-arrow-up"></i> 23% 较上月</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">成功领养</h5>
+                                    <h2 class="card-text" th:text="${successfulAdoptions}"></h2>
+                                    <p class="card-text text-success"><i class="bi bi-arrow-up"></i> 8% 较上月</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 宠物管理部分 -->
+                <section id="petManagement" class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="bi bi-paw"></i> 宠物管理</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPetModal">
+                            <i class="bi bi-plus-lg"></i> 添加宠物
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#">全部宠物</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">待领养</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">已领养</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>照片</th>
+                                        <th>名字</th>
+                                        <th>品种</th>
+                                        <th>年龄</th>
+                                        <th>性别</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="pet : ${pets}">
+                                        <td th:text="${pet.petId}"></td>
+                                        <td>
+                                            <img th:if="${not #lists.isEmpty(pet.images)}" 
+                                                 th:src="${pet.images[0].imageUrl}" 
+                                                 class="rounded-circle" 
+                                                 width="50" 
+                                                 height="50"
+                                                 alt="宠物照片">
+                                            <div th:unless="${not #lists.isEmpty(pet.images)}" 
+                                                 class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
+                                                 style="width: 50px; height: 50px;">
+                                                <i class="bi bi-image text-white"></i>
+                                            </div>
+                                        </td>
+                                        <td th:text="${pet.name}"></td>
+                                        <td th:text="${pet.breed != null ? pet.breed.name : '未知'}"></td>
+                                        <td th:text="${pet.age != null ? pet.age + '岁' : '未知'}"></td>
+                                        <td th:text="${pet.gender}"></td>
+                                        <td th:text="${pet.status}"></td>
+                                        <td>
+                                            <a th:href="@{/pets/edit/{id}(id=${pet.petId})}" class="btn btn-primary btn-sm">编辑</a>
+                                            <a th:href="@{/pets/delete/{id}(id=${pet.petId})}" class="btn btn-danger btn-sm">删除</a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

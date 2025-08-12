@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>编辑标签</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid">
+            <!-- 页面标题 -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-edit"></i> 编辑标签
+                </h1>
+                <a href="/tags/list" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+                    <i class="fas fa-arrow-left fa-sm text-white-50"></i> 返回列表
+                </a>
+            </div>
+
+            <!-- 编辑标签表单 -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">标签信息</h6>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/tags/edit}" method="post" th:object="${tag}">
+                                <input type="hidden" th:field="*{tagId}">
+                                
+                                <div class="form-group">
+                                    <label for="name">标签名称 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           th:field="*{name}" placeholder="请输入标签名称" required>
+                                    <small class="form-text text-muted">标签名称将用于显示和搜索</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="slug">Slug</label>
+                                    <input type="text" class="form-control" id="slug" name="slug" 
+                                           th:field="*{slug}" placeholder="自动生成或手动输入">
+                                    <small class="form-text text-muted">URL友好的标识符，留空将自动生成</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="color">标签颜色</label>
+                                    <div class="input-group">
+                                        <input type="color" class="form-control" id="color" name="color" 
+                                               th:field="*{color}" th:value="${tag.color != null ? tag.color : '#6c757d'}">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">选择颜色</span>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">选择标签的显示颜色</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>预览效果</label>
+                                    <div class="mt-2">
+                                        <span class="badge badge-secondary" id="preview-badge" 
+                                              style="font-size: 1rem; padding: 0.5rem 1rem;"
+                                              th:text="${tag.name}">标签预览</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>创建时间</label>
+                                    <input type="text" class="form-control" 
+                                           th:value="${#dates.format(tag.createdAt, 'yyyy-MM-dd HH:mm:ss')}" 
+                                           readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> 保存修改
+                                    </button>
+                                    <a href="/tags/list" class="btn btn-secondary ml-2">
+                                        <i class="fas fa-times"></i> 取消
+                                    </a>
+                                    <a th:href="@{/tags/detail/{id}(id=${tag.tagId})}" class="btn btn-info ml-2">
+                                        <i class="fas fa-eye"></i> 查看详情
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">标签信息</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>标签ID:</strong>
+                                </div>
+                                <div class="col-6" th:text="${tag.tagId}">1</div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>当前名称:</strong>
+                                </div>
+                                <div class="col-6" th:text="${tag.name}">标签名称</div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>当前Slug:</strong>
+                                </div>
+                                <div class="col-6" th:text="${tag.slug}">tag-slug</div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>当前颜色:</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span class="badge badge-light" 
+                                          th:style="'background-color: ' + ${tag.color != null ? tag.color : '#6c757d'}"
+                                          th:text="${tag.color != null ? tag.color : '默认'}">颜色</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">操作提示</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>注意:</strong> 修改标签信息可能会影响已使用该标签的宠物显示效果。
+                            </div>
+                            
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> 修改名称后，相关宠物页面会自动更新</li>
+                                <li><i class="fas fa-check text-success"></i> 修改颜色后，标签显示效果会立即改变</li>
+                                <li><i class="fas fa-check text-success"></i> Slug修改后，URL结构会相应调整</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // 实时预览标签效果
+        document.getElementById('name').addEventListener('input', function() {
+            const name = this.value || '标签预览';
+            document.getElementById('preview-badge').textContent = name;
+        });
+
+        document.getElementById('color').addEventListener('input', function() {
+            const color = this.value;
+            document.getElementById('preview-badge').style.backgroundColor = color;
+        });
+
+        // 自动生成slug
+        document.getElementById('name').addEventListener('blur', function() {
+            const name = this.value;
+            const slugInput = document.getElementById('slug');
+            if (name && !slugInput.value) {
+                // 简单的slug生成逻辑
+                let slug = name.toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                slugInput.value = slug;
+            }
+        });
+
+        // 初始化预览效果
+        window.addEventListener('load', function() {
+            const colorInput = document.getElementById('color');
+            const previewBadge = document.getElementById('preview-badge');
+            if (colorInput.value) {
+                previewBadge.style.backgroundColor = colorInput.value;
+            }
+        });
+    </script>
+</body>
+</html> 

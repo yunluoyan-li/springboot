@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.AdoptionApplicationDao">
+
+    <!-- 结果映射 -->
+    <resultMap id="AdoptionApplicationResultMap" type="com.example.petadoption.model.AdoptionApplication">
+        <id column="application_id" property="applicationId" jdbcType="BIGINT"/>
+        <result column="pet_id" property="petId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="application_text" property="applicationText" jdbcType="VARCHAR"/>
+        <result column="home_description" property="homeDescription" jdbcType="VARCHAR"/>
+        <result column="experience" property="experience" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="admin_notes" property="adminNotes" jdbcType="VARCHAR"/>
+        <result column="response_date" property="responseDate" jdbcType="TIMESTAMP"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        application_id, pet_id, user_id, application_text, home_description, experience, 
+        status, admin_notes, response_date, created_at
+    </sql>
+
+    <!-- 获取所有申请 -->
+    <select id="getAllApplications" resultMap="AdoptionApplicationResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM adoption_applications
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 根据ID获取申请 -->
+    <select id="getApplicationById" parameterType="java.lang.Long" resultMap="AdoptionApplicationResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM adoption_applications
+        WHERE application_id = #{applicationId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 根据用户ID获取申请 -->
+    <select id="getApplicationsByUserId" parameterType="java.lang.Long" resultMap="AdoptionApplicationResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM adoption_applications
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 根据宠物ID获取申请 -->
+    <select id="getApplicationsByPetId" parameterType="java.lang.Long" resultMap="AdoptionApplicationResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM adoption_applications
+        WHERE pet_id = #{petId,jdbcType=BIGINT}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 插入新申请 -->
+    <insert id="insertApplication" parameterType="com.example.petadoption.model.AdoptionApplication" 
+            useGeneratedKeys="true" keyProperty="applicationId">
+        INSERT INTO adoption_applications (
+            pet_id, user_id, application_text, home_description, experience, 
+            status, created_at
+        ) VALUES (
+            #{petId,jdbcType=BIGINT},
+            #{userId,jdbcType=BIGINT},
+            #{applicationText,jdbcType=VARCHAR},
+            #{homeDescription,jdbcType=VARCHAR},
+            #{experience,jdbcType=VARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{createdAt,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <!-- 更新申请 -->
+    <update id="updateApplication" parameterType="com.example.petadoption.model.AdoptionApplication">
+        UPDATE adoption_applications
+        SET 
+            pet_id = #{petId,jdbcType=BIGINT},
+            user_id = #{userId,jdbcType=BIGINT},
+            application_text = #{applicationText,jdbcType=VARCHAR},
+            home_description = #{homeDescription,jdbcType=VARCHAR},
+            experience = #{experience,jdbcType=VARCHAR},
+            status = #{status,jdbcType=VARCHAR},
+            admin_notes = #{adminNotes,jdbcType=VARCHAR},
+            response_date = #{responseDate,jdbcType=TIMESTAMP}
+        WHERE application_id = #{applicationId,jdbcType=BIGINT}
+    </update>
+
+    <!-- 删除申请 -->
+    <delete id="deleteApplication" parameterType="java.lang.Long">
+        DELETE FROM adoption_applications
+        WHERE application_id = #{applicationId,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 获取待处理的申请数量 -->
+    <select id="getPendingApplicationsCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM adoption_applications
+        WHERE status = 'PENDING'
+    </select>
+
+    <!-- 获取新申请数量（最近7天内的申请） -->
+    <select id="getNewApplicationsCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM adoption_applications
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    </select>
+
+    <!-- 获取成功领养的数量 -->
+    <select id="getSuccessfulAdoptionsCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM adoption_applications
+        WHERE status = 'APPROVED'
+    </select>
+
+    <!-- 检查用户是否已经申请过某个宠物 -->
+    <select id="hasUserAppliedForPet" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM adoption_applications
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+        AND pet_id = #{petId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 数据分析相关方法 -->
+    
+    <!-- 查询总申请数量 -->
+    <select id="getTotalApplicationsCount" resultType="int">
+        SELECT COUNT(*) FROM adoption_applications
+    </select>
+
+    <!-- 查询领养申请趋势数据 -->
+    <select id="getAdoptionTrendData" resultType="java.util.Map">
+        SELECT 
+            DATE_FORMAT(created_at, '%Y-%m-%d') as day,
+            COUNT(*) as count
+        FROM adoption_applications 
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+        ORDER BY day
+    </select>
+
+    <!-- 批量拒绝同宠物其他申请 -->
+    <update id="rejectOtherApplications">
+        UPDATE adoption_applications
+        SET status = 'REJECTED'
+        WHERE pet_id = #{petId} AND application_id != #{excludeApplicationId}
+    </update>
+
+</mapper> 

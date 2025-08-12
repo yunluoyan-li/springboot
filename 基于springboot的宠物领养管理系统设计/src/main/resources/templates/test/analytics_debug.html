@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析调试页面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .debug-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .success-bg {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error-bg {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>数据分析调试页面</h1>
+        
+        <!-- 状态信息 -->
+        <div class="debug-card" th:classappend="${debugInfo.status == 'success' ? 'success-bg' : 'error-bg'}">
+            <h3>数据获取状态</h3>
+            <p><strong>状态:</strong> <span th:text="${debugInfo.status}">unknown</span></p>
+            <p><strong>消息:</strong> <span th:text="${debugInfo.message}">无消息</span></p>
+            <div th:if="${debugInfo.error != null}">
+                <h4>错误详情:</h4>
+                <pre th:text="${debugInfo.error}">无错误</pre>
+            </div>
+        </div>
+        
+        <!-- 基础统计数据 -->
+        <div class="debug-card">
+            <h3>基础统计数据</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>总宠物数量</h5>
+                            <h2 th:text="${debugInfo.totalPets}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>待领养宠物</h5>
+                            <h2 th:text="${debugInfo.availablePets}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>注册用户</h5>
+                            <h2 th:text="${debugInfo.totalUsers}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>申请数量</h5>
+                            <h2 th:text="${debugInfo.totalApplications}">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表数据信息 -->
+        <div class="debug-card">
+            <h3>图表数据信息</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>宠物状态分布</h5>
+                    <pre th:text="${#objects.toString(debugInfo.petStatusData)}">无数据</pre>
+                </div>
+                <div class="col-md-6">
+                    <h5>宠物性别分布</h5>
+                    <pre th:text="${#objects.toString(debugInfo.petGenderData)}">无数据</pre>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>用户角色分布</h5>
+                    <pre th:text="${#objects.toString(debugInfo.userRoleData)}">无数据</pre>
+                </div>
+                <div class="col-md-6">
+                    <h5>宠物品种数据</h5>
+                    <pre th:text="${#objects.toString(debugInfo.petBreedData)}">无数据</pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表测试 -->
+        <div class="debug-card">
+            <h3>图表测试</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>测试饼图</h5>
+                    <div class="chart-container">
+                        <canvas id="testPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5>测试柱状图</h5>
+                    <div class="chart-container">
+                        <canvas id="testBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="debug-card">
+            <h3>操作</h3>
+            <div class="btn-group" role="group">
+                <button class="btn btn-primary" onclick="testAPI()">测试API</button>
+                <button class="btn btn-success" onclick="location.reload()">刷新页面</button>
+                <a href="/analytics" class="btn btn-info">返回数据分析页面</a>
+                <a href="/dashboard" class="btn btn-secondary">返回仪表盘</a>
+            </div>
+        </div>
+        
+        <!-- API测试结果 -->
+        <div class="debug-card">
+            <h3>API测试结果</h3>
+            <div id="apiResult">
+                <p>点击"测试API"按钮来测试数据获取</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后初始化测试图表
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，初始化测试图表...');
+            
+            // 测试饼图
+            const pieCtx = document.getElementById('testPieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['测试1', '测试2', '测试3'],
+                    datasets: [{
+                        data: [30, 40, 30],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // 测试柱状图
+            const barCtx = document.getElementById('testBarChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['A', 'B', 'C', 'D'],
+                    datasets: [{
+                        label: '测试数据',
+                        data: [10, 20, 30, 40],
+                        backgroundColor: '#36A2EB'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            console.log('测试图表初始化完成');
+        });
+        
+        // 测试API函数
+        function testAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = '<p>正在测试API...</p>';
+            
+            fetch('/api/test/analytics-data')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API返回数据:', data);
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <h5>API测试成功！</h5>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('API测试失败:', error);
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h5>API测试失败！</h5>
+                            <p>错误信息: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html> 

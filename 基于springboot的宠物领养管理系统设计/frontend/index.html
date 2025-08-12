@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-paw me-2"></i>宠物领养系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPets()">
+                            <i class="fas fa-paw me-1"></i>宠物列表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showMyApplications()">
+                            <i class="fas fa-heart me-1"></i>我的申请
+                        </a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a class="nav-link" href="#" onclick="showAllApplications()">
+                            <i class="fas fa-list me-1"></i>所有申请
+                        </a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a class="nav-link" href="#" onclick="showUserManagement()">
+                            <i class="fas fa-users me-1"></i>用户管理
+                        </a>
+                    </li>
+                    <li class="nav-item admin-only" style="display: none;">
+                        <a class="nav-link" href="#" onclick="showSystemInfo()">
+                            <i class="fas fa-info-circle me-1"></i>系统信息
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" id="loginSection">
+                        <a class="nav-link" href="#" onclick="showLogin()">
+                            <i class="fas fa-sign-in-alt me-1"></i>登录
+                        </a>
+                    </li>
+                    <li class="nav-item" id="registerSection">
+                        <a class="nav-link" href="#" onclick="showRegister()">
+                            <i class="fas fa-user-plus me-1"></i>注册
+                        </a>
+                    </li>
+                    <li class="nav-item" id="userSection" style="display: none;">
+                        <span class="navbar-text me-3" id="userInfo"></span>
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-1"></i>登出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="container mt-4">
+        <!-- 登录表单 -->
+        <div id="loginForm" class="auth-form" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-sign-in-alt me-2"></i>用户登录</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="loginFormElement">
+                                <div class="mb-3">
+                                    <label for="loginUsername" class="form-label">用户名</label>
+                                    <input type="text" class="form-control" id="loginUsername" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">密码</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-sign-in-alt me-2"></i>登录
+                                </button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <a href="#" onclick="showRegister()">还没有账号？立即注册</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 注册表单 -->
+        <div id="registerForm" class="auth-form" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-user-plus me-2"></i>用户注册</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="registerFormElement">
+                                <div class="mb-3">
+                                    <label for="registerUsername" class="form-label">用户名</label>
+                                    <input type="text" class="form-control" id="registerUsername" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">邮箱</label>
+                                    <input type="email" class="form-control" id="registerEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">密码</label>
+                                    <input type="password" class="form-control" id="registerPassword" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerConfirmPassword" class="form-label">确认密码</label>
+                                    <input type="password" class="form-control" id="registerConfirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-user-plus me-2"></i>注册
+                                </button>
+                            </form>
+                            <div class="text-center mt-3">
+                                <a href="#" onclick="showLogin()">已有账号？立即登录</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 宠物列表 -->
+        <div id="petsSection" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-paw me-2"></i>宠物列表</h2>
+                        <button class="btn btn-primary" onclick="showAddPetModal()">
+                            <i class="fas fa-plus me-2"></i>添加宠物
+                        </button>
+                    </div>
+                    
+                    <!-- 搜索和筛选 -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="searchKeyword" placeholder="搜索宠物...">
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="breedFilter">
+                                        <option value="">全部品种</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="statusFilter">
+                                        <option value="">全部状态</option>
+                                        <option value="AVAILABLE">可领养</option>
+                                        <option value="ADOPTED">已领养</option>
+                                        <option value="PENDING">待审核</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select" id="genderFilter">
+                                        <option value="">全部性别</option>
+                                        <option value="MALE">公</option>
+                                        <option value="FEMALE">母</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary me-2" onclick="searchPets()">
+                                        <i class="fas fa-search me-1"></i>搜索
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="resetSearch()">
+                                        <i class="fas fa-refresh me-1"></i>重置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 宠物卡片网格 -->
+                    <div id="petsGrid" class="row"></div>
+                    
+                    <!-- 分页 -->
+                    <nav aria-label="宠物列表分页" class="mt-4">
+                        <ul class="pagination justify-content-center" id="pagination"></ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- 我的申请 -->
+        <div id="myApplicationsSection" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-heart me-2"></i>我的申请</h2>
+                    <div id="myApplicationsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 所有申请（管理员） -->
+        <div id="allApplicationsSection" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-list me-2"></i>所有申请</h2>
+                    <div id="allApplicationsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户管理（管理员） -->
+        <div id="userManagementSection" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-users me-2"></i>用户管理</h2>
+                    <div id="userManagementList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统信息（管理员） -->
+        <div id="systemInfoSection" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-info-circle me-2"></i>系统信息</h2>
+                    <div id="systemInfoContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加宠物模态框 -->
+    <div class="modal fade" id="addPetModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus me-2"></i>添加宠物</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPetForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="petName" class="form-label">宠物名称</label>
+                                    <input type="text" class="form-control" id="petName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="petBreed" class="form-label">品种</label>
+                                    <select class="form-select" id="petBreed" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="petGender" class="form-label">性别</label>
+                                    <select class="form-select" id="petGender" required>
+                                        <option value="">请选择</option>
+                                        <option value="MALE">公</option>
+                                        <option value="FEMALE">母</option>
+                                        <option value="UNKNOWN">未知</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="petColor" class="form-label">颜色</label>
+                                    <input type="text" class="form-control" id="petColor">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="petSize" class="form-label">体型</label>
+                                    <select class="form-select" id="petSize">
+                                        <option value="">请选择</option>
+                                        <option value="SMALL">小型</option>
+                                        <option value="MEDIUM">中型</option>
+                                        <option value="LARGE">大型</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="petStatus" class="form-label">状态</label>
+                                    <select class="form-select" id="petStatus" required>
+                                        <option value="">请选择</option>
+                                        <option value="AVAILABLE">可领养</option>
+                                        <option value="UNAVAILABLE">不可用</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="petDescription" class="form-label">描述</label>
+                            <textarea class="form-control" id="petDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="addPet()">添加宠物</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 申请领养模态框 -->
+    <div class="modal fade" id="adoptionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-heart me-2"></i>申请领养</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img id="petImage" src="" class="img-fluid rounded" alt="宠物照片">
+                        </div>
+                        <div class="col-md-8">
+                            <h5 id="petName"></h5>
+                            <p id="petDescription"></p>
+                        </div>
+                    </div>
+                    <form id="adoptionForm">
+                        <input type="hidden" id="adoptionPetId">
+                        <div class="mb-3">
+                            <label for="applicationText" class="form-label">申请理由 *</label>
+                            <textarea class="form-control" id="applicationText" rows="4" required 
+                                      placeholder="请详细说明您想要领养这个宠物的理由..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="homeDescription" class="form-label">家庭环境描述 *</label>
+                            <textarea class="form-control" id="homeDescription" rows="4" required
+                                      placeholder="请描述您的家庭环境，包括居住条件、家庭成员等..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="experience" class="form-label">养宠经验</label>
+                            <textarea class="form-control" id="experience" rows="3"
+                                      placeholder="请描述您的养宠经验（可选）"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" onclick="submitAdoption()">提交申请</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="messageToast" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">消息</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastMessage"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 

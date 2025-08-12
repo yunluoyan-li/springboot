@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 60px; /* 为固定导航栏留出空间 */
+        }
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            height: calc(100vh - 60px);
+            width: 16.666667%;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .content {
+            margin-left: 16.666667%;
+            padding: 20px;
+            min-height: calc(100vh - 60px);
+            background-color: #fff;
+        }
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .nav-link {
+            color: #495057;
+            padding: 10px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .nav-link:hover {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+        .nav-link.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .welcome-message {
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                height: auto;
+            }
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">
+            <i class="fas fa-heart me-2"></i>宠物领养系统
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="fas fa-tachometer-alt me-1"></i> 仪表盘
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pets/list">
+                        <i class="fas fa-paw me-1"></i> 宠物管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/list">
+                        <i class="fas fa-users me-1"></i> 用户管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/categories/list">
+                        <i class="fas fa-tags me-1"></i> 分类管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/breeds/list">
+                        <i class="fas fa-paw me-1"></i> 品种管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tags/list">
+                        <i class="fas fa-tags me-1"></i> 标签管理
+                    </a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="text-light welcome-message">
+                    <i class="fas fa-user-circle me-1"></i> 欢迎, <span th:text="${session.loginUser}">用户</span>
+                    <span class="badge bg-primary ms-2" th:text="${session.role}">角色</span>
+                </span>
+                <a th:href="@{/users/tologin}" class="btn btn-outline-light ms-3">
+                    <i class="fas fa-right-from-bracket me-1"></i> 退出
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 侧边栏目录 -->
+        <div class="col-md-2 sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="fas fa-tachometer-alt me-2"></i> 仪表盘
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pets/list">
+                        <i class="fas fa-paw me-2"></i> 宠物管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/list">
+                        <i class="fas fa-users me-2"></i> 用户管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/categories/list">
+                        <i class="fas fa-tags me-2"></i> 分类管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/breeds/list">
+                        <i class="fas fa-paw me-2"></i> 品种管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tags/list">
+                        <i class="fas fa-tags me-2"></i> 标签管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/adoption/list">
+                        <i class="fas fa-heart me-2"></i> 领养申请
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/adoption/my-applications">
+                        <i class="fas fa-list me-2"></i> 我的申请
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- 右侧内容区域 -->
+        <div class="col-md-10 content">
+            <div layout:fragment="content">
+                <!-- 这里是具体页面的内容 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 根据当前页面URL设置侧边栏活动状态
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.sidebar .nav-link');
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+</script>
+</body>
+</html>

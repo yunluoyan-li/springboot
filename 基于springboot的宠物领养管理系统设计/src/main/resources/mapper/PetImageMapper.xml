@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.PetImageDao">
+    <resultMap id="petImageResultMap" type="com.example.petadoption.model.PetImage">
+        <id property="imageId" column="image_id"/>
+        <result property="petId" column="pet_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="isPrimary" column="is_primary"/>
+        <result property="displayOrder" column="display_order"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        image_id, pet_id, image_url, is_primary, display_order, created_at
+    </sql>
+
+    <!-- 根据宠物ID查询图片 -->
+    <select id="findByPetId" parameterType="Long" resultMap="petImageResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM pet_images
+        WHERE pet_id = #{petId}
+    </select>
+
+    <!-- 插入图片 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="imageId">
+        INSERT INTO pet_images (pet_id, image_url, is_primary, display_order, created_at)
+        VALUES (#{petId}, #{imageUrl}, #{isPrimary}, #{displayOrder}, #{createdAt})
+    </insert>
+
+    <!-- 删除图片 -->
+    <delete id="delete" parameterType="Long">
+        DELETE FROM pet_images WHERE image_id = #{imageId}
+    </delete>
+
+    <!-- 更新图片 -->
+    <update id="update" parameterType="com.example.petadoption.model.PetImage">
+        UPDATE pet_images
+        SET pet_id = #{petId},
+            image_url = #{imageUrl},
+            is_primary = #{isPrimary},
+            display_order = #{displayOrder},
+            created_at = #{createdAt}
+        WHERE image_id = #{imageId}
+    </update>
+
+    <!-- 根据图片ID查询图片 -->
+    <select id="findById" parameterType="Long" resultMap="petImageResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM pet_images
+        WHERE image_id = #{imageId}
+    </select>
+</mapper>

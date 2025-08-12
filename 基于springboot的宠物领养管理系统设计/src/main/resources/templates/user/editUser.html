@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑用户信息</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .edit-user-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        
+        .page-title {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-title i {
+            color: #667eea;
+            margin-right: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .user-info-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+        
+        .user-name-display {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-email-display {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-label {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-label i {
+            margin-right: 8px;
+            color: #667eea;
+            width: 20px;
+        }
+        
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+            outline: none;
+        }
+        
+        .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+            outline: none;
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .alert-success {
+            background: linear-gradient(45deg, #51cf66, #40c057);
+            color: white;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .btn-back {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-card {
+                padding: 30px 20px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+        
+        .password-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .password-note {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .role-status-section {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="edit-user-page">
+        <div class="form-card">
+            <!-- 返回按钮 -->
+            <a href="/users/list" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                返回用户列表
+            </a>
+            
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-user-edit"></i>
+                    编辑用户
+                </h1>
+            </div>
+            
+            <!-- 用户信息头部 -->
+            <div class="user-info-header">
+                <div class="user-avatar" th:text="${#strings.substring(user.username, 0, 1)}">U</div>
+                <div class="user-name-display" th:text="${user.username}">用户名</div>
+                <div class="user-email-display" th:text="${user.email}">邮箱</div>
+            </div>
+            
+            <!-- 错误消息显示 -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- 成功消息显示 -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            
+            <!-- 用户表单 -->
+            <form th:action="@{/users/edit/{id}(id=${user.userId})}" th:object="${user}" method="post">
+                <input type="hidden" th:field="*{userId}">
+                
+                <div class="form-row">
+                    <div class="form-section">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user"></i>
+                            用户名
+                        </label>
+                        <input type="text" class="form-control" id="username" th:field="*{username}" 
+                               placeholder="请输入用户名" required>
+                    </div>
+                    
+                    <div class="form-section">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i>
+                            邮箱地址
+                        </label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}" 
+                               placeholder="请输入邮箱地址" required>
+                    </div>
+                </div>
+                
+                <!-- 密码部分 -->
+                <div class="password-section">
+                    <div class="section-title">
+                        <i class="fas fa-lock"></i>
+                        密码设置
+                    </div>
+                    <div class="form-section">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-key"></i>
+                            新密码
+                        </label>
+                        <input type="password" class="form-control" id="password" th:field="*{password}" 
+                               placeholder="留空则不修改密码">
+                        <div class="password-note">
+                            <i class="fas fa-info-circle"></i>
+                            如果不需要修改密码，请留空此字段
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-section">
+                        <label for="phone" class="form-label">
+                            <i class="fas fa-phone"></i>
+                            手机号码
+                        </label>
+                        <input type="tel" class="form-control" id="phone" th:field="*{phone}" 
+                               placeholder="请输入手机号码">
+                    </div>
+                    
+                    <div class="form-section">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i>
+                            地址
+                        </label>
+                        <input type="text" class="form-control" id="address" th:field="*{address}" 
+                               placeholder="请输入地址">
+                    </div>
+                </div>
+                
+                <!-- 角色和状态部分 -->
+                <div class="role-status-section">
+                    <div class="section-title">
+                        <i class="fas fa-cogs"></i>
+                        权限设置
+                    </div>
+                    <div class="form-row">
+                        <div class="form-section">
+                            <label for="role" class="form-label">
+                                <i class="fas fa-user-shield"></i>
+                                用户角色
+                            </label>
+                            <select class="form-select" id="role" th:field="*{role}" required>
+                                <option value="USER">普通用户</option>
+                                <option value="STAFF">员工</option>
+                                <option value="ADMIN">管理员</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-section">
+                            <label for="status" class="form-label">
+                                <i class="fas fa-circle"></i>
+                                用户状态
+                            </label>
+                            <select class="form-select" id="status" th:field="*{status}" required>
+                                <option value="ACTIVE">激活</option>
+                                <option value="INACTIVE">未激活</option>
+                                <option value="BANNED">封禁</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i>
+                    保存修改
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

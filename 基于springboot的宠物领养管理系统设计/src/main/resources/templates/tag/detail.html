@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>标签详情</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid">
+            <!-- 页面标题 -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-tag"></i> 标签详情
+                </h1>
+                <div>
+                    <a th:href="@{/tags/edit/{id}(id=${tag.tagId})}" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm">
+                        <i class="fas fa-edit fa-sm text-white-50"></i> 编辑标签
+                    </a>
+                    <a href="/tags/list" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm ml-2">
+                        <i class="fas fa-arrow-left fa-sm text-white-50"></i> 返回列表
+                    </a>
+                </div>
+            </div>
+
+            <!-- 标签详情 -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">标签信息</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">标签ID</label>
+                                        <p class="form-control-static" th:text="${tag.tagId}">1</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">标签名称</label>
+                                        <p class="form-control-static">
+                                            <span class="badge badge-secondary" 
+                                                  th:style="'background-color: ' + ${tag.color != null ? tag.color : '#6c757d'}"
+                                                  th:text="${tag.name}">标签名称</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Slug</label>
+                                        <p class="form-control-static" th:text="${tag.slug}">tag-slug</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">标签颜色</label>
+                                        <p class="form-control-static">
+                                            <span class="badge badge-light" 
+                                                  th:style="'background-color: ' + ${tag.color != null ? tag.color : '#6c757d'}"
+                                                  th:text="${tag.color != null ? tag.color : '默认'}">颜色</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">创建时间</label>
+                                        <p class="form-control-static" th:text="${#dates.format(tag.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">使用状态</label>
+                                        <p class="form-control-static">
+                                            <span class="badge badge-success">使用中</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 使用该标签的宠物列表 -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">使用该标签的宠物</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>提示:</strong> 这里将显示所有使用该标签的宠物列表。
+                            </div>
+                            <div class="text-center text-muted">
+                                <i class="fas fa-paw fa-3x mb-3"></i>
+                                <br>暂无相关宠物数据
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- 标签统计 -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">标签统计</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="h4 mb-0 font-weight-bold text-primary" id="petCount">0</div>
+                                        <div class="text-xs text-uppercase text-muted">关联宠物</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center">
+                                        <div class="h4 mb-0 font-weight-bold text-success" id="viewCount">0</div>
+                                        <div class="text-xs text-uppercase text-muted">浏览次数</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作历史 -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">操作历史</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="timeline-title">标签创建</h6>
+                                        <p class="timeline-text" th:text="${#dates.format(tag.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">快速操作</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a th:href="@{/tags/edit/{id}(id=${tag.tagId})}" class="btn btn-warning btn-block">
+                                    <i class="fas fa-edit"></i> 编辑标签
+                                </a>
+                                <a th:href="@{/tags/delete/{id}(id=${tag.tagId})}" class="btn btn-danger btn-block"
+                                   onclick="return confirm('确定要删除这个标签吗？删除后无法恢复！')">
+                                    <i class="fas fa-trash"></i> 删除标签
+                                </a>
+                                <a href="/tags/list" class="btn btn-secondary btn-block">
+                                    <i class="fas fa-list"></i> 返回列表
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: -35px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .timeline-content {
+            padding-left: 15px;
+        }
+        .timeline-title {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .timeline-text {
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        // 这里可以添加获取标签统计数据的AJAX请求
+        // 例如：获取使用该标签的宠物数量和浏览次数
+    </script>
+</body>
+</html> 

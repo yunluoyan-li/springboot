@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析模块测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .test-card {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .data-display {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1><i class="bi bi-bug"></i> 数据分析模块测试</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="test-card">
+                    <h4><i class="bi bi-database"></i> 基础统计数据</h4>
+                    <div class="data-display">
+                        <p><strong>总宠物数量:</strong> <span th:text="${basicStats.totalPets}">0</span></p>
+                        <p><strong>待领养宠物:</strong> <span th:text="${basicStats.availablePets}">0</span></p>
+                        <p><strong>注册用户:</strong> <span th:text="${basicStats.totalUsers}">0</span></p>
+                        <p><strong>总申请数量:</strong> <span th:text="${basicStats.totalApplications}">0</span></p>
+                        <p><strong>待审核申请:</strong> <span th:text="${basicStats.pendingApplications}">0</span></p>
+                        <p><strong>成功领养:</strong> <span th:text="${basicStats.successfulAdoptions}">0</span></p>
+                        <p><strong>领养转化率:</strong> <span th:text="${basicStats.adoptionRate}">0</span>%</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="test-card">
+                    <h4><i class="bi bi-graph-up"></i> 图表数据</h4>
+                    <div class="data-display">
+                        <p><strong>宠物状态分布:</strong></p>
+                        <ul>
+                            <li th:each="item : ${petStatusData}">
+                                <span th:text="${item.label}">状态</span>: <span th:text="${item.value}">0</span>
+                            </li>
+                        </ul>
+                        
+                        <p><strong>宠物性别分布:</strong></p>
+                        <ul>
+                            <li th:each="item : ${petGenderData}">
+                                <span th:text="${item.label}">性别</span>: <span th:text="${item.value}">0</span>
+                            </li>
+                        </ul>
+                        
+                        <p><strong>用户角色分布:</strong></p>
+                        <ul>
+                            <li th:each="item : ${userRoleData}">
+                                <span th:text="${item.label}">角色</span>: <span th:text="${item.value}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="test-card">
+                    <h4><i class="bi bi-tags"></i> 品种数据</h4>
+                    <div class="data-display">
+                        <p><strong>热门宠物品种:</strong></p>
+                        <ul>
+                            <li th:each="item : ${petBreedData}">
+                                <span th:text="${item.label}">品种</span>: <span th:text="${item.value}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="test-card">
+                    <h4><i class="bi bi-calendar3"></i> 趋势数据</h4>
+                    <div class="data-display">
+                        <p><strong>领养申请趋势:</strong></p>
+                        <ul>
+                            <li th:each="item : ${adoptionTrendData}">
+                                <span th:text="${item.month}">月份</span>: <span th:text="${item.count}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="test-card">
+                    <h4><i class="bi bi-list-ul"></i> 分类数据</h4>
+                    <div class="data-display">
+                        <p><strong>分类统计:</strong></p>
+                        <ul>
+                            <li th:each="category : ${categoryStats}">
+                                <span th:text="${category.name}">分类名</span> - 
+                                品种数量: <span th:text="${category.breedCount != null ? category.breedCount : 0}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="test-card">
+                    <h4><i class="bi bi-gear"></i> 测试操作</h4>
+                    <div class="btn-group" role="group">
+                        <a href="/analytics" class="btn btn-primary">
+                            <i class="bi bi-bar-chart"></i> 访问数据分析页面
+                        </a>
+                        <a href="/dashboard" class="btn btn-success">
+                            <i class="bi bi-speedometer2"></i> 返回仪表盘
+                        </a>
+                        <a href="/test/database" class="btn btn-info">
+                            <i class="bi bi-database"></i> 数据库测试
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

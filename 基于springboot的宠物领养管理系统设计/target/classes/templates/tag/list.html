@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>标签管理</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid">
+            <!-- 页面标题 -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-tags"></i> 标签管理
+                </h1>
+                <a href="/tags/add" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                    <i class="fas fa-plus fa-sm text-white-50"></i> 添加标签
+                </a>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        总标签数
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${tags != null ? tags.size() : 0}">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-tags fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        使用中标签
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">-</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        本月新增
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">-</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        热门标签
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">-</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-fire fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 标签列表 -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">标签列表</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">操作选项:</div>
+                            <a class="dropdown-item" href="/tags/stats">
+                                <i class="fas fa-chart-bar fa-sm fa-fw mr-2 text-gray-400"></i>
+                                查看统计
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" onclick="exportTags()">
+                                <i class="fas fa-download fa-sm fa-fw mr-2 text-gray-400"></i>
+                                导出数据
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>标签名称</th>
+                                    <th>Slug</th>
+                                    <th>颜色</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="tag : ${tags}">
+                                    <td th:text="${tag.tagId}">1</td>
+                                    <td>
+                                        <span class="badge badge-secondary" 
+                                              th:style="'background-color: ' + ${tag.color != null ? tag.color : '#6c757d'}"
+                                              th:text="${tag.name}">标签名称</span>
+                                    </td>
+                                    <td th:text="${tag.slug}">tag-slug</td>
+                                    <td>
+                                        <span class="badge badge-light" 
+                                              th:style="'background-color: ' + ${tag.color != null ? tag.color : '#6c757d'}"
+                                              th:text="${tag.color != null ? tag.color : '默认'}">颜色</span>
+                                    </td>
+                                    <td th:text="${#dates.format(tag.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/tags/detail/{id}(id=${tag.tagId})}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a th:href="@{/tags/edit/{id}(id=${tag.tagId})}" 
+                                               class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a th:href="@{/tags/delete/{id}(id=${tag.tagId})}" 
+                                               class="btn btn-sm btn-danger"
+                                               onclick="return confirm('确定要删除这个标签吗？')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${tags == null || tags.isEmpty()}">
+                                    <td colspan="6" class="text-center text-muted">
+                                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                                        <br>暂无标签数据
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function exportTags() {
+            alert('导出功能开发中...');
+        }
+    </script>
+</body>
+</html> 

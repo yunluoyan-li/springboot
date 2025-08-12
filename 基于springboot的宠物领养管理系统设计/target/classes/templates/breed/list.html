@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>品种管理 - 宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/layout.css}" rel="stylesheet">
+    <style>
+        .breed-list {
+            padding: 20px;
+        }
+        .content-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .page-title {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        .page-title i {
+            color: #3498db;
+            margin-right: 10px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        .breed-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .breed-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+        }
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .alert i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="breed-list">
+            <div class="content-card">
+                <!-- 页面标题 -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-paw"></i>
+                        品种管理
+                    </h1>
+                    <a href="/breeds/add" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> 添加品种
+                    </a>
+                </div>
+
+                <!-- 消息提示 -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- 统计信息 -->
+                <div class="row g-3 mb-4 justify-content-center">
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center shadow-sm border-0" style="background: #f8f9fa;">
+                            <div class="card-body">
+                                <i class="fas fa-paw fa-2x text-primary mb-2"></i>
+                                <h4 class="card-title mb-1" th:text="${#lists.size(breeds)}">0</h4>
+                                <div class="card-text text-muted">总品种数</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center shadow-sm border-0" style="background: #eafaf1;">
+                            <div class="card-body">
+                                <i class="fas fa-leaf fa-2x text-success mb-2"></i>
+                                <h4 class="card-title mb-1" th:text="${#lists.size(breeds.?[careLevel == 'LOW'])}">0</h4>
+                                <div class="card-text text-success">低护理难度</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center shadow-sm border-0" style="background: #fffbe6;">
+                            <div class="card-body">
+                                <i class="fas fa-adjust fa-2x text-warning mb-2"></i>
+                                <h4 class="card-title mb-1" th:text="${#lists.size(breeds.?[careLevel == 'MEDIUM'])}">0</h4>
+                                <div class="card-text text-warning">中等护理难度</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center shadow-sm border-0" style="background: #fff0f0;">
+                            <div class="card-body">
+                                <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                                <h4 class="card-title mb-1" th:text="${#lists.size(breeds.?[careLevel == 'HIGH'])}">0</h4>
+                                <div class="card-text text-danger">高护理难度</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                
+                <!-- 品种列表 -->
+                <div th:if="${#lists.isEmpty(breeds)}" class="empty-state">
+                    <i class="fas fa-paw"></i>
+                    <h3>暂无品种数据</h3>
+                    <p>点击右上角的"添加品种"按钮来创建第一个品种</p>
+                </div>
+                
+                <div th:if="${not #lists.isEmpty(breeds)}" class="row">
+                    <div th:each="breed : ${breeds}" class="col-md-6 col-lg-4 mb-4">
+                        <div class="breed-card" style="background: white !important; border: 3px solid #e9ecef !important; border-radius: 12px !important; padding: 20px !important; margin-bottom: 20px !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important; display: block !important;">
+                            <div class="breed-header" style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 15px !important;">
+                                <h5 class="breed-name" style="font-size: 1.3rem !important; font-weight: 600 !important; color: #2c3e50 !important; margin: 0 !important;" th:text="${breed.breedName}">品种名称</h5>
+                                <span class="care-level" th:class="${'badge ' + (breed.careLevel == 'LOW' ? 'bg-success' : (breed.careLevel == 'MEDIUM' ? 'bg-warning' : 'bg-danger'))}" 
+                                      style="padding: 4px 12px !important; border-radius: 20px !important; font-size: 0.85rem !important; font-weight: 500 !important;" 
+                                      th:text="${breed.careLevel == 'LOW' ? '低难度' : (breed.careLevel == 'MEDIUM' ? '中等' : '高难度')}">护理难度</span>
+                            </div>
+                            
+                            <div class="breed-info" style="margin-bottom: 15px !important;">
+                                <div class="info-item" style="margin-bottom: 8px !important; font-size: 0.9rem !important; color: #6c757d !important;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <strong>原产地:</strong> <span th:text="${breed.origin != null ? breed.origin : '未知'}">原产地</span>
+                                </div>
+                                <div class="info-item" style="margin-bottom: 8px !important; font-size: 0.9rem !important; color: #6c757d !important;">
+                                    <i class="fas fa-clock"></i>
+                                    <strong>寿命:</strong> <span th:text="${breed.lifeSpan != null ? breed.lifeSpan : '未知'}">寿命</span>
+                                </div>
+                                <div class="info-item" style="margin-bottom: 8px !important; font-size: 0.9rem !important; color: #6c757d !important;">
+                                    <i class="fas fa-heart"></i>
+                                    <strong>性格:</strong> <span th:text="${breed.temperament != null ? breed.temperament : '未知'}">性格</span>
+                                </div>
+                            </div>
+                            
+                            <div class="breed-description" style="color: #6c757d !important; margin-bottom: 15px !important; line-height: 1.6 !important;" th:if="${breed.description != null and breed.description != ''}">
+                                <span th:text="${#strings.abbreviate(breed.description, 100)}">品种描述</span>
+                            </div>
+                            <div class="breed-description" style="color: #6c757d !important; margin-bottom: 15px !important; line-height: 1.6 !important;" th:if="${breed.description == null or breed.description == ''}">
+                                <span class="text-muted">暂无描述</span>
+                            </div>
+                            
+                            <div class="breed-meta" style="display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 0.9rem !important; color: #6c757d !important;">
+                                <div>
+                                    <i class="fas fa-tag"></i>
+                                    分类ID: <span th:text="${breed.categoryId}">0</span>
+                                </div>
+                                <div class="breed-actions" style="display: flex !important; gap: 8px !important;">
+                                    <a th:href="@{/breeds/detail/{id}(id=${breed.breedId})}" 
+                                       class="btn btn-outline-primary btn-sm" title="查看详情">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a th:href="@{/breeds/edit/{id}(id=${breed.breedId})}" 
+                                       class="btn btn-outline-warning btn-sm" title="编辑">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a th:href="@{/breeds/delete/{id}(id=${breed.breedId})}" 
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('确定要删除这个品种吗？')" title="删除">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/layout-protection.js}"></script>
+</body>
+</html> 

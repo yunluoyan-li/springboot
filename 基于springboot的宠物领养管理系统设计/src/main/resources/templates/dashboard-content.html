@@ -1,0 +1,112 @@
+<!-- 仪表盘部分 -->
+<section id="dashboard" class="mb-5">
+    <h2 class="mb-4"><i class="bi bi-speedometer2"></i> 仪表盘</h2>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <h5 class="card-title">待领养宠物</h5>
+                    <h2 class="card-text" th:text="${availablePets}"></h2>
+                    <p class="card-text text-success"><i class="bi bi-arrow-up"></i> 12% 较上月</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <h5 class="card-title">新申请</h5>
+                    <h2 class="card-text" th:text="${newApplications}"></h2>
+                    <p class="card-text text-danger"><i class="bi bi-arrow-down"></i> 5% 较上周</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <h5 class="card-title">注册用户</h5>
+                    <h2 class="card-text" th:text="${registeredUsers}"></h2>
+                    <p class="card-text text-success"><i class="bi bi-arrow-up"></i> 23% 较上月</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card">
+                <div class="card-body">
+                    <h5 class="card-title">成功领养</h5>
+                    <h2 class="card-text" th:text="${successfulAdoptions}"></h2>
+                    <p class="card-text text-success"><i class="bi bi-arrow-up"></i> 8% 较上月</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 宠物管理部分 -->
+<section id="petManagement" class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-paw"></i> 宠物管理</h2>
+        <!-- 删除添加宠物按钮 -->
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="tab-all">全部宠物</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>照片</th>
+                        <th>名字</th>
+                        <th>品种</th>
+                        <th>年龄</th>
+                        <th>性别</th>
+                        <th>状态</th>
+                        <th>体型</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pet : ${pets}" th:attr="data-status=${pet.status}">
+                        <td th:text="${pet.petId}"></td>
+                        <td>
+                            <img th:if="${not #lists.isEmpty(pet.images)}" 
+                                 th:src="${pet.images[0].imageUrl}" 
+                                 class="rounded-circle" 
+                                 width="50" 
+                                 height="50"
+                                 alt="宠物照片">
+                            <div th:unless="${not #lists.isEmpty(pet.images)}" 
+                                 class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
+                                 style="width: 50px; height: 50px;">
+                                <i class="bi bi-image text-white"></i>
+                            </div>
+                        </td>
+                        <td th:text="${pet.name}"></td>
+                        <td th:text="${pet.breed != null ? pet.breed.name : '未知'}"></td>
+                        <td th:text="${pet.age != null ? pet.age + '岁' : '未知'}"></td>
+                        <td th:text="${pet.gender}"></td>
+                        <td th:text="${pet.status}"></td>
+                        <td>
+                            <span th:if="${pet.size == 'SMALL'}" class="badge bg-info">小型</span>
+                            <span th:if="${pet.size == 'MEDIUM'}" class="badge bg-warning">中型</span>
+                            <span th:if="${pet.size == 'LARGE'}" class="badge bg-danger">大型</span>
+                            <span th:if="${pet.size == null}" class="text-muted">-</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section> 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 移除tab切换相关JS
+});
+</script> 

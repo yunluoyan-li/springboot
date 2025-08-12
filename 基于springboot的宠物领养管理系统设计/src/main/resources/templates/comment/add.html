@@ -1,0 +1,142 @@
+<style>
+    .comment-add-bg {
+        background: linear-gradient(90deg, #f8fafc 0%, #e0e7ff 100%);
+        border-radius: 1rem;
+        padding: 2rem 2.5rem 1.5rem 2.5rem;
+        box-shadow: 0 4px 24px 0 rgba(80, 112, 255, 0.10);
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .comment-add-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 1.5rem;
+        letter-spacing: 1px;
+        text-align: center;
+    }
+    .comment-add-form .form-group label {
+        font-weight: 600;
+        color: #374151;
+    }
+    .comment-add-form .form-control:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px #6366f133;
+    }
+    .comment-add-form .form-select {
+        border-radius: 0.5rem;
+    }
+    .comment-add-form .btn-primary {
+        background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+        border: none;
+        font-weight: 600;
+        letter-spacing: 1px;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px 0 rgba(80, 112, 255, 0.10);
+        transition: background 0.2s;
+        min-width: 120px;
+    }
+    .comment-add-form .btn-primary:hover {
+        background: linear-gradient(90deg, #60a5fa 0%, #6366f1 100%);
+    }
+    .comment-add-form .btn-secondary {
+        border-radius: 0.5rem;
+        min-width: 100px;
+    }
+    .comment-add-form textarea {
+        resize: vertical;
+        min-height: 80px;
+        max-height: 200px;
+    }
+    .comment-add-form .form-text {
+        color: #6366f1;
+        font-size: 0.95rem;
+    }
+    .comment-add-form .input-group-text {
+        background: #f1f5f9;
+        border-radius: 0.5rem 0 0 0.5rem;
+    }
+    .comment-add-form .badge {
+        font-size: 1em;
+        padding: 0.4em 0.8em;
+        border-radius: 0.5em;
+    }
+    .comment-btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+</style>
+<div layout:fragment="content">
+    <div class="comment-add-bg">
+        <div class="comment-add-title">
+            <i class="fas fa-plus"></i> 新增评论
+        </div>
+        <div class="alert alert-info mb-4 text-center">
+            <i class="fas fa-info-circle"></i> 请填写评论内容并选择对应宠物。评论用户为当前登录账号。内容支持 200 字以内。
+        </div>
+        <div class="card shadow mb-0">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">评论信息</h6>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/comments/add}" method="post" th:object="${comment}" class="comment-add-form">
+                    <div class="form-group mb-3">
+                        <label for="content">内容 <span class="text-muted small">(最多200字)</span></label>
+                        <textarea class="form-control" id="content" name="content" th:field="*{content}" rows="4" maxlength="200" required oninput="updateCharCount()"></textarea>
+                        <small class="form-text">
+                            已输入 <span id="charCount">0</span>/200 字
+                        </small>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="petId">宠物</label>
+                        <select class="form-control form-select" id="petId" name="petId" th:field="*{petId}" required>
+                            <option value="" disabled selected>请选择宠物</option>
+                            <option th:each="pet : ${pets}" th:value="${pet.petId}" th:text="${pet.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>评论用户</label>
+                        <input type="text" class="form-control" th:value="${session.loginUser}" readonly>
+                        <input type="hidden" name="userId" th:value="${session.userId}" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="parentId">父评论ID <span class="text-muted small">(可选)</span></label>
+                        <input type="number" class="form-control" id="parentId" name="parentId" th:field="*{parentId}" placeholder="如为回复请填写父评论ID">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="status">状态</label>
+                        <select class="form-control form-select" id="status" name="status" th:field="*{status}">
+                            <option value="PUBLISHED" th:selected="${comment.status == 'PUBLISHED'}">
+                                <span class="badge badge-success">已发布</span>
+                            </option>
+                            <option value="HIDDEN" th:selected="${comment.status == 'HIDDEN'}">
+                                <span class="badge badge-warning">待审核</span>
+                            </option>
+                            <option value="DELETED" th:selected="${comment.status == 'DELETED'}">
+                                <span class="badge badge-danger">已删除</span>
+                            </option>
+                        </select>
+                    </div>
+                    <div class="comment-btn-group">
+                        <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save"></i> 保存</button>
+                        <a href="/comments/list" class="btn btn-secondary px-4"><i class="fas fa-times"></i> 取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function updateCharCount() {
+        var textarea = document.getElementById('content');
+        var count = textarea.value.length;
+        document.getElementById('charCount').innerText = count;
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCharCount();
+    });
+</script> 

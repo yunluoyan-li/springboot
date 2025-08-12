@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.TagDao">
+    <resultMap id="tagResultMap" type="com.example.petadoption.model.Tag">
+        <id property="tagId" column="tag_id"/>
+        <result property="name" column="name"/>
+        <result property="slug" column="slug"/>
+        <result property="color" column="color"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="tagResultMap">
+        SELECT * FROM tags ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" parameterType="Integer" resultMap="tagResultMap">
+        SELECT * FROM tags WHERE tag_id = #{tagId}
+    </select>
+
+    <select id="findByName" parameterType="String" resultMap="tagResultMap">
+        SELECT * FROM tags WHERE name = #{name}
+    </select>
+
+    <select id="findBySlug" parameterType="String" resultMap="tagResultMap">
+        SELECT * FROM tags WHERE slug = #{slug}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="tagId">
+        INSERT INTO tags (name, slug, color, created_at)
+        VALUES (#{name}, #{slug}, #{color}, NOW())
+    </insert>
+
+    <update id="update" parameterType="com.example.petadoption.model.Tag">
+        UPDATE tags
+        SET name = #{name},
+            slug = #{slug},
+            color = #{color}
+        WHERE tag_id = #{tagId}
+    </update>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM tags WHERE tag_id = #{tagId}
+    </delete>
+
+    <select id="findByPetId" parameterType="Integer" resultMap="tagResultMap">
+        SELECT t.* FROM tags t
+        INNER JOIN pet_tags pt ON t.tag_id = pt.tag_id
+        WHERE pt.pet_id = #{petId}
+        ORDER BY t.name
+    </select>
+
+    <insert id="addTagToPet">
+        INSERT INTO pet_tags (pet_id, tag_id, created_at)
+        VALUES (#{petId}, #{tagId}, NOW())
+    </insert>
+
+    <delete id="removeTagFromPet">
+        DELETE FROM pet_tags WHERE pet_id = #{petId} AND tag_id = #{tagId}
+    </delete>
+
+    <select id="getTagUsageStats" resultType="java.util.Map">
+        SELECT 
+            t.tag_id as tagId,
+            t.name as tagName,
+            t.color as tagColor,
+            COUNT(pt.pet_id) as usageCount
+        FROM tags t
+        LEFT JOIN pet_tags pt ON t.tag_id = pt.tag_id
+        GROUP BY t.tag_id, t.name, t.color
+        ORDER BY usageCount DESC, t.name
+    </select>
+
+    <select id="searchTags" parameterType="String" resultMap="tagResultMap">
+        SELECT * FROM tags 
+        WHERE name LIKE CONCAT('%', #{keyword}, '%') 
+        OR slug LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY name
+    </select>
+</mapper> 

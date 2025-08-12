@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加品种 - 宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/layout.css}" rel="stylesheet">
+    <style>
+        .breed-form {
+            padding: 20px;
+        }
+        .content-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .page-title {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        .page-title i {
+            color: #3498db;
+            margin-right: 10px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .form-section h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .form-section h4 i {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .required {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .help-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .form-actions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+            text-align: center;
+        }
+        .form-actions .btn {
+            margin: 0 10px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .alert i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="breed-list">
+            <div class="content-card">
+                <!-- 页面标题 -->
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="fas fa-plus"></i>
+                        添加品种
+                    </h1>
+                    <a href="/breeds/list" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> 返回列表
+                    </a>
+                </div>
+
+                <!-- 消息提示 -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- 品种表单 -->
+                <form th:action="@{/breeds/add}" method="post" th:object="${breed}">
+                    <!-- 基本信息 -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-info-circle"></i> 基本信息</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="breedName" class="form-label">
+                                    品种名称 <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="breedName" name="breedName" 
+                                       th:field="*{breedName}" placeholder="例如：中华田园猫、金毛寻回犬" required>
+                                <div class="help-text">品种的显示名称，建议使用简洁明了的名称</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="categoryId" class="form-label">
+                                    所属分类 <span class="required">*</span>
+                                </label>
+                                <select class="form-select" id="categoryId" name="categoryId" th:field="*{categoryId}" required>
+                                    <option value="">请选择分类</option>
+                                    <option th:each="category : ${categories}" 
+                                            th:value="${category.categoryId}" 
+                                            th:text="${category.name}"></option>
+                                </select>
+                                <div class="help-text">选择该品种所属的宠物分类</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 详细信息 -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-list-alt"></i> 详细信息</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="origin" class="form-label">原产地</label>
+                                <input type="text" class="form-control" id="origin" name="origin" 
+                                       th:field="*{origin}" placeholder="例如：中国、英国、美国">
+                                <div class="help-text">品种的原产地或发源地</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="lifeSpan" class="form-label">平均寿命</label>
+                                <input type="text" class="form-control" id="lifeSpan" name="lifeSpan" 
+                                       th:field="*{lifeSpan}" placeholder="例如：12-18年、10-12年">
+                                <div class="help-text">该品种的平均寿命范围</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="temperament" class="form-label">性格特点</label>
+                                <input type="text" class="form-control" id="temperament" name="temperament" 
+                                       th:field="*{temperament}" placeholder="例如：温顺、活泼、聪明">
+                                <div class="help-text">该品种的主要性格特征</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="careLevel" class="form-label">护理难度</label>
+                                <select class="form-select" id="careLevel" name="careLevel" th:field="*{careLevel}">
+                                    <option value="">请选择护理难度</option>
+                                    <option value="LOW">低难度 - 适合新手</option>
+                                    <option value="MEDIUM">中等难度 - 需要一定经验</option>
+                                    <option value="HIGH">高难度 - 需要丰富经验</option>
+                                </select>
+                                <div class="help-text">该品种的护理和饲养难度等级</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="description" class="form-label">品种描述</label>
+                                <textarea class="form-control" id="description" name="description" 
+                                          th:field="*{description}" rows="4" 
+                                          placeholder="详细描述该品种的特点、习性、适合的饲养环境等"></textarea>
+                                <div class="help-text">详细描述该品种的特点、习性、适合的饲养环境等</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="searchKeywords" class="form-label">搜索关键词</label>
+                                <input type="text" class="form-control" id="searchKeywords" name="searchKeywords" 
+                                       th:field="*{searchKeywords}" 
+                                       placeholder="例如：中华田园猫,土猫,家猫,中国猫">
+                                <div class="help-text">用于搜索的关键词，多个关键词用逗号分隔</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 表单操作 -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 保存品种
+                        </button>
+                        <a href="/breeds/list" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> 取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/layout-protection.js}"></script>
+</body>
+</html> 

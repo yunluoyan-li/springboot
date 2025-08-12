@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>编辑评论</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-edit"></i> 编辑评论
+            </h1>
+            <a href="/comments/list" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> 返回列表</a>
+        </div>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">评论信息</h6>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/comments/edit}" method="post" th:object="${comment}">
+                    <input type="hidden" th:field="*{commentId}">
+                    <div class="form-group">
+                        <label for="content">内容</label>
+                        <textarea class="form-control" id="content" name="content" th:field="*{content}" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="petId">宠物ID</label>
+                        <input type="number" class="form-control" id="petId" name="petId" th:field="*{petId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userId">用户ID</label>
+                        <input type="number" class="form-control" id="userId" name="userId" th:field="*{userId}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentId">父评论ID</label>
+                        <input type="number" class="form-control" id="parentId" name="parentId" th:field="*{parentId}">
+                    </div>
+                    <div class="form-group">
+                        <label for="status">状态</label>
+                        <select class="form-control" id="status" name="status" th:field="*{status}">
+                            <option value="PUBLISHED" th:selected="${comment.status == 'PUBLISHED'}">已发布</option>
+                            <option value="HIDDEN" th:selected="${comment.status == 'HIDDEN'}">待审核</option>
+                            <option value="DELETED" th:selected="${comment.status == 'DELETED'}">已删除</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> 保存修改</button>
+                    <a href="/comments/list" class="btn btn-secondary ml-2"><i class="fas fa-times"></i> 取消</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

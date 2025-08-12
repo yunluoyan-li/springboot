@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>领养申请管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-clipboard-list"></i> 领养申请管理</h2>
+                    <a href="/dashboard" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 返回仪表板
+                    </a>
+                </div>
+
+                <!-- 消息提示 -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- 申请列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> 申请列表</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(applications)}" class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">暂无领养申请</p>
+                        </div>
+                        
+                        <div th:if="${!#lists.isEmpty(applications)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>申请ID</th>
+                                        <th>申请人</th>
+                                        <th>宠物名称</th>
+                                        <th>申请时间</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="app : ${applications}">
+                                        <td th:text="${app.applicationId}"></td>
+                                        <td th:text="${app.userId}"></td>
+                                        <td th:text="${app.petId}"></td>
+                                        <td th:text="${#dates.format(app.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                                        <td>
+                                            <span th:if="${app.status == 'PENDING'}" class="badge bg-warning">待审核</span>
+                                            <span th:if="${app.status == 'APPROVED'}" class="badge bg-success">已通过</span>
+                                            <span th:if="${app.status == 'REJECTED'}" class="badge bg-danger">已拒绝</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/adoption/detail/{id}(id=${app.applicationId})}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> 查看
+                                            </a>
+                                            <form th:if="${session.userRole == 'ADMIN'} and ${app.status == 'PENDING'}" 
+                                                  th:action="@{/adoption/approve/{id}(id=${app.applicationId})}" 
+                                                  method="post" style="display: inline;">
+                                                <input type="hidden" name="adminNotes" value="管理员审核通过">
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                        onclick="return confirm('确定要通过这个申请吗？')">
+                                                    <i class="fas fa-check"></i> 通过
+                                                </button>
+                                            </form>
+                                            <form th:if="${session.userRole == 'ADMIN'} and ${app.status == 'PENDING'}" 
+                                                  th:action="@{/adoption/reject/{id}(id=${app.applicationId})}" 
+                                                  method="post" style="display: inline;">
+                                                <input type="hidden" name="adminNotes" value="管理员审核拒绝">
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('确定要拒绝这个申请吗？')">
+                                                    <i class="fas fa-times"></i> 拒绝
+                                                </button>
+                                            </form>
+                                            <a th:if="${session.userRole == 'ADMIN'}" th:href="@{/adoption/delete/{id}(id=${app.applicationId})}" 
+                                               class="btn btn-sm btn-outline-danger"
+                                               onclick="return confirm('确定要删除这个申请吗？')">
+                                                <i class="fas fa-trash"></i> 删除
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

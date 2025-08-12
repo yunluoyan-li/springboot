@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petadoption.mapper.CommentDao">
+    <resultMap id="commentResultMap" type="com.example.petadoption.model.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="petId" column="pet_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="content" column="content"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 查询所有评论（可分页、可筛选） -->
+    <select id="findAll" resultMap="commentResultMap">
+        SELECT * FROM comments
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND content LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="petId != null">
+                AND pet_id = #{petId}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 获取评论总数（可筛选） -->
+    <select id="getCount" resultType="int">
+        SELECT COUNT(*) FROM comments
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND content LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="petId != null">
+                AND pet_id = #{petId}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据ID查询评论 -->
+    <select id="findById" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments WHERE comment_id = #{commentId}
+    </select>
+
+    <!-- 插入新评论 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO comments (pet_id, user_id, parent_id, content, status, created_at)
+        VALUES (#{petId}, #{userId}, #{parentId}, #{content}, #{status}, NOW())
+    </insert>
+
+    <!-- 更新评论内容/状态 -->
+    <update id="update" parameterType="com.example.petadoption.model.Comment">
+        UPDATE comments
+        <set>
+            <if test="content != null">content = #{content},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE comment_id = #{commentId}
+    </update>
+
+    <!-- 删除评论 -->
+    <delete id="delete" parameterType="long">
+        DELETE FROM comments WHERE comment_id = #{commentId}
+    </delete>
+
+    <!-- 批量审核/修改状态 -->
+    <update id="updateStatusBatch">
+        UPDATE comments SET status = #{status}
+        WHERE comment_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 查询某宠物的所有评论（按时间排序） -->
+    <select id="findByPetId" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments WHERE pet_id = #{petId} ORDER BY created_at ASC
+    </select>
+
+    <!-- 查询某用户的所有评论 -->
+    <select id="findByUserId" parameterType="long" resultMap="commentResultMap">
+        SELECT * FROM comments WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <!-- 查询最新评论（按时间倒序） -->
+    <select id="findRecent" resultMap="commentResultMap">
+        SELECT * FROM comments WHERE status = 'PUBLISHED' ORDER BY created_at DESC LIMIT #{limit}
+    </select>
+
+    <!-- 评论统计（总数、今日、待审核等） -->
+    <select id="getCommentStats" resultType="java.util.Map">
+        SELECT 
+            (SELECT COUNT(*) FROM comments) AS totalCount,
+            (SELECT COUNT(*) FROM comments WHERE status = 'PUBLISHED') AS publishedCount,
+            (SELECT COUNT(*) FROM comments WHERE status = 'HIDDEN') AS hiddenCount,
+            (SELECT COUNT(*) FROM comments WHERE status = 'DELETED') AS deletedCount,
+            (SELECT COUNT(*) FROM comments WHERE DATE(created_at) = CURDATE()) AS todayCount
+    </select>
+</mapper> 

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析 - 宠物领养系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        .analytics-card {
+            border-left: 4px solid #0d6efd;
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        .analytics-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        .stat-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.3);
+        }
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.3);
+        }
+        .stat-card.info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .analytics-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+        }
+        .metric-item {
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-left: 4px solid #0d6efd;
+        }
+        .metric-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .trend-indicator {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .trend-up {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .trend-down {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <!-- 页面标题 -->
+    <div class="analytics-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-0"><i class="bi bi-bar-chart"></i> 数据分析仪表板</h1>
+                <p class="mb-0 mt-2">实时监控宠物领养系统的各项指标</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-light" onclick="refreshData()">
+                    <i class="bi bi-arrow-clockwise"></i> 刷新数据
+                </button>
+                <button class="btn btn-info ms-2" onclick="debugData()">
+                    <i class="bi bi-bug"></i> 调试数据
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <!-- 基础统计卡片 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number" th:text="${basicStats.totalPets}">0</div>
+                        <div class="stat-label">总宠物数量</div>
+                        <div class="trend-indicator trend-up mt-2">
+                            <i class="bi bi-arrow-up"></i> 增长中
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card success">
+                        <div class="stat-number" th:text="${basicStats.availablePets}">0</div>
+                        <div class="stat-label">待领养宠物</div>
+                        <div class="trend-indicator trend-up mt-2">
+                            <i class="bi bi-arrow-up"></i> 可领养
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card warning">
+                        <div class="stat-number" th:text="${basicStats.totalUsers}">0</div>
+                        <div class="stat-label">注册用户</div>
+                        <div class="trend-indicator trend-up mt-2">
+                            <i class="bi bi-arrow-up"></i> 活跃用户
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card info">
+                        <div class="stat-number" th:text="${basicStats.successfulAdoptions}">0</div>
+                        <div class="stat-label">成功领养</div>
+                        <div class="trend-indicator trend-up mt-2">
+                            <i class="bi bi-arrow-up"></i> 成功案例
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 关键指标 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-speedometer2"></i> 关键指标</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-item">
+                                        <div class="metric-label">领养转化率</div>
+                                        <div class="metric-value" th:text="${basicStats.adoptionRate + '%'}">0%</div>
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar progress-bar-custom" 
+                                                 th:style="'width: ' + ${basicStats.adoptionRate} + '%'"
+                                                 role="progressbar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-item">
+                                        <div class="metric-label">申请成功率</div>
+                                        <div class="metric-value" th:text="${basicStats.totalApplications > 0 ? #numbers.formatDecimal((basicStats.successfulAdoptions * 100.0 / basicStats.totalApplications), 1, 1) : '0.0'} + '%'">0%</div>
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar progress-bar-custom bg-success" 
+                                                 th:style="'width: ' + ${basicStats.totalApplications > 0 ? #numbers.formatDecimal((basicStats.successfulAdoptions * 100.0 / basicStats.totalApplications), 1, 1) : '0.0'} + '%'"
+                                                 role="progressbar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-item">
+                                        <div class="metric-label">待审核申请</div>
+                                        <div class="metric-value" th:text="${basicStats.pendingApplications}">0</div>
+                                        <div class="trend-indicator trend-down mt-2">
+                                            <i class="bi bi-clock"></i> 需要处理
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-item">
+                                        <div class="metric-label">平均处理时间</div>
+                                        <div class="metric-value">2.5天</div>
+                                        <div class="trend-indicator trend-up mt-2">
+                                            <i class="bi bi-check-circle"></i> 效率良好
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="row">
+                <!-- 宠物状态分布 -->
+                <div class="col-md-6">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-pie-chart"></i> 宠物状态分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="petStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 宠物性别分布 -->
+                <div class="col-md-6">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-gender-ambiguous"></i> 宠物性别分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="petGenderChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- 领养申请趋势 -->
+                <div class="col-md-8">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-graph-up"></i> 领养申请趋势</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="adoptionTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户角色分布 -->
+                <div class="col-md-4">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-people"></i> 用户角色分布</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="userRoleChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- 宠物品种统计 -->
+                <div class="col-md-6">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-tags"></i> 热门宠物品种</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="petBreedChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 月度统计 -->
+                <div class="col-md-6">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-calendar3"></i> 月度统计</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="monthlyStatsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分类统计 -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-tags"></i> 分类统计概览</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3) !important;">
+                                        <div class="stat-number" style="font-size: 2rem !important; font-weight: 700 !important; margin-bottom: 5px !important;" th:text="${#lists.size(categoryStats)}">0</div>
+                                        <div class="stat-label" style="font-size: 0.9rem !important; opacity: 0.9 !important;">总分类数</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3) !important;">
+                                        <div class="stat-number" style="font-size: 2rem !important; font-weight: 700 !important; margin-bottom: 5px !important;" th:text="${#lists.size(categoryStats.?[description != null and description != ''])}">0</div>
+                                        <div class="stat-label" style="font-size: 0.9rem !important; opacity: 0.9 !important;">有描述分类</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3) !important;">
+                                        <div class="stat-number" style="font-size: 2rem !important; font-weight: 700 !important; margin-bottom: 5px !important;" th:text="${#lists.size(categoryStats.?[iconUrl != null and iconUrl != ''])}">0</div>
+                                        <div class="stat-label" style="font-size: 0.9rem !important; opacity: 0.9 !important;">有图标分类</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2) !important; color: white !important; padding: 20px !important; border-radius: 12px !important; text-align: center !important; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3) !important;">
+                                        <div class="stat-number" style="font-size: 2rem !important; font-weight: 700 !important; margin-bottom: 5px !important;" th:text="${#lists.size(categoryStats.?[displayOrder <= 5])}">0</div>
+                                        <div class="stat-label" style="font-size: 0.9rem !important; opacity: 0.9 !important;">主要分类</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-chart-pie"></i> 分类分布图</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分类详细统计表格 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-table"></i> 分类详细统计</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>分类名称</th>
+                                            <th>别名</th>
+                                            <th>显示顺序</th>
+                                            <th>品种数量</th>
+                                            <th>占比</th>
+                                            <th>描述</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="category : ${categoryStats}">
+                                            <td th:text="${category.name}">分类名称</td>
+                                            <td th:text="${category.slug}">别名</td>
+                                            <td th:text="${category.displayOrder}">0</td>
+                                            <td th:text="${category.breedCount != null ? category.breedCount : 0}">0</td>
+                                            <td>
+                                                <span th:if="${#lists.size(categoryStats) > 0}">
+                                                    <span th:text="${#numbers.formatDecimal((category.breedCount != null ? category.breedCount : 0) * 100.0 / #lists.size(categoryStats), 1, 1)}">0</span>%
+                                                </span>
+                                                <span th:if="${#lists.size(categoryStats) == 0}">0%</span>
+                                            </td>
+                                            <td th:text="${category.description != null ? category.description : '暂无描述'}">描述</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细统计表格 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card analytics-card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-table"></i> 详细统计数据</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>宠物统计</h6>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td>总宠物数量</td>
+                                                <td th:text="${basicStats.totalPets}">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>待领养宠物</td>
+                                                <td th:text="${basicStats.availablePets}">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>领养转化率</td>
+                                                <td th:text="${basicStats.adoptionRate} + '%'">0%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>申请统计</h6>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <td>总申请数量</td>
+                                                <td th:text="${basicStats.totalApplications}">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>待审核申请</td>
+                                                <td th:text="${basicStats.pendingApplications}">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>成功领养</td>
+                                                <td th:text="${basicStats.successfulAdoptions}">0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+// 刷新数据函数
+function refreshData() {
+    // 显示加载状态
+    const loadingHtml = '<div class="text-center p-5"><div class="spinner-border" role="status"><span class="visually-hidden">刷新中...</span></div><p class="mt-3">正在刷新数据...</p></div>';
+    document.querySelector('.container-fluid').innerHTML = loadingHtml;
+    
+    // 重新加载页面
+    location.reload();
+}
+
+// 初始化图表函数
+function initializeCharts() {
+    console.log('开始初始化图表...');
+    
+    // 获取后端传递的数据，确保不为null
+    let petStatusData = /*[[${petStatusData}]]*/ [];
+    let petGenderData = /*[[${petGenderData}]]*/ [];
+    let userRoleData = /*[[${userRoleData}]]*/ [];
+    let petBreedData = /*[[${petBreedData}]]*/ [];
+    let adoptionTrendData = /*[[${adoptionTrendData}]]*/ [];
+    let monthlyStatsData = /*[[${monthlyStatsData}]]*/ [];
+    let categoryStats = /*[[${categoryStats}]]*/ [];
+    petStatusData = petStatusData || [];
+    petGenderData = petGenderData || [];
+    userRoleData = userRoleData || [];
+    petBreedData = petBreedData || [];
+    adoptionTrendData = adoptionTrendData || [];
+    monthlyStatsData = monthlyStatsData || [];
+    categoryStats = categoryStats || [];
+    
+    console.log('获取到的数据:', {
+        petStatusData,
+        petGenderData,
+        userRoleData,
+        petBreedData,
+        adoptionTrendData,
+        monthlyStatsData,
+        categoryStats
+    });
+    
+    // 检查Chart.js是否可用
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js 未加载！');
+        alert('Chart.js 库未加载，请检查网络连接！');
+        return;
+    }
+    
+    console.log('Chart.js 版本:', Chart.version);
+    
+    // 检查数据是否为空
+    if (!petStatusData || petStatusData.length === 0) {
+        console.warn('宠物状态数据为空，使用默认数据');
+    }
+    if (!petGenderData || petGenderData.length === 0) {
+        console.warn('宠物性别数据为空，使用默认数据');
+    }
+    if (!userRoleData || userRoleData.length === 0) {
+        console.warn('用户角色数据为空，使用默认数据');
+    }
+    if (!petBreedData || petBreedData.length === 0) {
+        console.warn('宠物品种数据为空，使用默认数据');
+    }
+    if (!adoptionTrendData || adoptionTrendData.length === 0) {
+        console.warn('领养趋势数据为空，使用默认数据');
+    }
+    if (!categoryStats || categoryStats.length === 0) {
+        console.warn('分类统计数据为空，使用默认数据');
+    }
+
+    // 宠物状态分布饼图
+    const petStatusCtx = document.getElementById('petStatusChart');
+    if (petStatusCtx) {
+        new Chart(petStatusCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: petStatusData.length > 0 ? petStatusData.map(item => item.label) : ['可领养', '待审核', '已领养', '不可用'],
+                datasets: [{
+                    data: petStatusData.length > 0 ? petStatusData.map(item => item.value) : [120, 30, 80, 20],
+                    backgroundColor: [
+                        '#28a745',
+                        '#ffc107',
+                        '#17a2b8',
+                        '#dc3545'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // 宠物性别分布饼图
+    const petGenderCtx = document.getElementById('petGenderChart');
+    if (petGenderCtx) {
+        new Chart(petGenderCtx.getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: petGenderData.length > 0 ? petGenderData.map(item => item.label) : ['公', '母', '未知'],
+                datasets: [{
+                    data: petGenderData.length > 0 ? petGenderData.map(item => item.value) : [100, 90, 20],
+                    backgroundColor: [
+                        '#007bff',
+                        '#e83e8c',
+                        '#6c757d'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // 领养申请趋势线图
+    const adoptionTrendCtx = document.getElementById('adoptionTrendChart');
+    if (adoptionTrendCtx) {
+        new Chart(adoptionTrendCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: adoptionTrendData.length > 0 ? adoptionTrendData.map(item => item.day) : ['1日', '2日', '3日', '4日', '5日', '6日', '7日', '8日', '9日', '10日', '11日', '12日'],
+                datasets: [{
+                    label: '申请数量',
+                    data: adoptionTrendData.length > 0 ? adoptionTrendData.map(item => item.count) : [15, 18, 22, 25, 20, 28, 30, 35, 32, 38, 40, 45],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 用户角色分布饼图
+    const userRoleCtx = document.getElementById('userRoleChart');
+    if (userRoleCtx) {
+        new Chart(userRoleCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: userRoleData.length > 0 ? userRoleData.map(item => item.label) : ['管理员', '员工', '普通用户'],
+                datasets: [{
+                    data: userRoleData.length > 0 ? userRoleData.map(item => item.value) : [5, 15, 180],
+                    backgroundColor: [
+                        '#dc3545',
+                        '#ffc107',
+                        '#28a745'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // 宠物品种统计柱状图
+    const petBreedCtx = document.getElementById('petBreedChart');
+    if (petBreedCtx) {
+        new Chart(petBreedCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: petBreedData.length > 0 ? petBreedData.map(item => item.label) : ['金毛', '拉布拉多', '哈士奇', '泰迪', '比熊'],
+                datasets: [{
+                    label: '数量',
+                    data: petBreedData.length > 0 ? petBreedData.map(item => item.value) : [25, 30, 20, 35, 15],
+                    backgroundColor: [
+                        '#007bff',
+                        '#28a745',
+                        '#ffc107',
+                        '#dc3545',
+                        '#6f42c1'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 月度统计柱状图
+    const monthlyStatsCtx = document.getElementById('monthlyStatsChart');
+    if (monthlyStatsCtx) {
+        new Chart(monthlyStatsCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: monthlyStatsData.labels || ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '新增宠物',
+                    data: monthlyStatsData.newPets || [15, 18, 22, 25, 20, 28],
+                    backgroundColor: '#007bff'
+                }, {
+                    label: '新增用户',
+                    data: monthlyStatsData.newUsers || [10, 12, 15, 18, 16, 22],
+                    backgroundColor: '#28a745'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 分类分布饼图
+    const categoryCtx = document.getElementById('categoryChart');
+    if (categoryCtx) {
+        new Chart(categoryCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: categoryStats.length > 0 ? categoryStats.map(item => item.name) : ['狗狗', '猫咪', '其他'],
+                datasets: [{
+                    data: categoryStats.length > 0 ? categoryStats.map(item => item.breedCount || 0) : [25, 30, 15],
+                    backgroundColor: [
+                        '#667eea',
+                        '#764ba2',
+                        '#f093fb',
+                        '#f5576c',
+                        '#4facfe',
+                        '#00f2fe',
+                        '#43e97b',
+                        '#38f9d7'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    console.log('所有图表初始化完成！');
+}
+
+// 将函数挂到window上，供外部调用
+window.initializeCharts = initializeCharts;
+
+// 页面加载完成后初始化图表
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('页面加载完成，开始初始化图表...');
+    initializeCharts();
+});
+
+// 调试数据函数
+function debugData() {
+    console.log('=== 调试数据 ===');
+    
+    // 获取后端传递的数据
+    const petStatusData = /*[[${petStatusData}]]*/ [];
+    const petGenderData = /*[[${petGenderData}]]*/ [];
+    const userRoleData = /*[[${userRoleData}]]*/ [];
+    const petBreedData = /*[[${petBreedData}]]*/ [];
+    const adoptionTrendData = /*[[${adoptionTrendData}]]*/ [];
+    const monthlyStatsData = /*[[${monthlyStatsData}]]*/ [];
+    const categoryStats = /*[[${categoryStats}]]*/ [];
+    
+    console.log('宠物状态数据:', petStatusData);
+    console.log('宠物性别数据:', petGenderData);
+    console.log('用户角色数据:', userRoleData);
+    console.log('宠物品种数据:', petBreedData);
+    console.log('领养趋势数据:', adoptionTrendData);
+    console.log('月度统计数据:', monthlyStatsData);
+    console.log('分类统计数据:', categoryStats);
+    
+    // 检查Chart.js
+    console.log('Chart.js 是否可用:', typeof Chart !== 'undefined');
+    if (typeof Chart !== 'undefined') {
+        console.log('Chart.js 版本:', Chart.version);
+    }
+    
+    // 检查图表容器
+    const containers = [
+        'petStatusChart',
+        'petGenderChart',
+        'adoptionTrendChart',
+        'userRoleChart',
+        'petBreedChart',
+        'monthlyStatsChart',
+        'categoryChart'
+    ];
+    
+    containers.forEach(id => {
+        const element = document.getElementById(id);
+        console.log(`${id} 容器:`, element ? '存在' : '不存在');
+    });
+    
+    alert('调试信息已输出到控制台，请按F12查看！');
+}
+</script>
+
+</body>
+</html> 
