@@ -42,11 +42,11 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 输入正确的账号、密码后，系统会自动识别管理员或者用户，并跳转到相应主页。
 
-![8f24579b38384acc7ae8ab04844e5b13](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\8f24579b38384acc7ae8ab04844e5b13.png)
+![login](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\login.png)
 
 ### 展示板页面
 
-![551496e0bcccb6cc8c71773034ac1cb4](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\551496e0bcccb6cc8c71773034ac1cb4.png)
+![yibiaopan](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\yibiaopan.png)
 
 ### 管理员界面
 
@@ -58,19 +58,19 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 - 宠物列表
 
-  ![5a4e9ab7944ae2d31fed20da2814c5df](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\5a4e9ab7944ae2d31fed20da2814c5df.png)
+  ![petlist](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\petlist.png)
 
 - 添加宠物
 
-  ![363555b32db0f43ea885793628dba5d3](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\363555b32db0f43ea885793628dba5d3.png)
+  ![tianjiacongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\tianjiacongwu.png)
 
-- 编辑图书
+- 编辑宠物
 
-  ![bb3d787dbe015bd55b90dfa875a0bfd4](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\bb3d787dbe015bd55b90dfa875a0bfd4.png)
+  ![banjicongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\banjicongwu.png)
 
-- 删除图书
+- 删除宠物
 
-  ![43d1a2d6b44a336162d41e7d5252ae84](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\43d1a2d6b44a336162d41e7d5252ae84.png)
+  ![shanchuchongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shanchuchongwu.png)
 
 #### 用户管理
 
@@ -78,7 +78,7 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 - 用户管理的增删查改类似宠物管理，不再赘述
 
-  ![f067f731c6276eed9b942ec6604d0eb0](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\f067f731c6276eed9b942ec6604d0eb0.png)
+  ![user](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user.png)
 
 
 
@@ -86,11 +86,11 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 - 领养记录查询，以及领养的通过与否
 
-  ![82ec2f37f02728d93a12b1deee576258](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\82ec2f37f02728d93a12b1deee576258.png)
+  ![adoptionlist](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\adoptionlist.png)
 
 - 领养申请详情
 
-  ![4be18b52b82d13581ec7b0979f68d55a](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\4be18b52b82d13581ec7b0979f68d55a.png)
+  ![shenqing](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shenqing.png)
 
   
 
@@ -98,27 +98,27 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
   #### 分类管理
 
-  ![ed43ac2deb78351253bdfa5e14f4580e](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\ed43ac2deb78351253bdfa5e14f4580e.png)
+  ![fenlei](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\fenlei.png)
 
   #### 品种管理
 
-  ![ea222e410323a91e68e467d01338b0cb](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\ea222e410323a91e68e467d01338b0cb.png)
+  ![pingzhong](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\pingzhong.png)
 
   #### 评论管理
 
-  ![cba1746486fdfd7a78255bba4b7d40df](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\cba1746486fdfd7a78255bba4b7d40df.png)
+  ![pinlun](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\pinlun.png)
 
   #### 标签管理
 
-  ![b9f472f133b326299142d6ae78826a10](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\b9f472f133b326299142d6ae78826a10.png)
+  ![biaoqian](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\biaoqian.png)
 
   #### 数据分析
 
-  ![f23b88ed1d366ed19d1d4ed3c35a3121](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\f23b88ed1d366ed19d1d4ed3c35a3121.png)
+  ![shujufenxi](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shujufenxi.png)
 
   #### 收藏管理
 
-  ![eb04032b2cf4052c07191a0a691290b7](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\eb04032b2cf4052c07191a0a691290b7.png)
+  ![shouchang](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\shouchang.png)
 
 
 
@@ -126,25 +126,25 @@ SpringBoot、Mybatis、MySQL、Bootstrap等
 
 #### 宠物列表
 
-![c0c5191c5abb73e1c793a30d9ec9f175](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\c0c5191c5abb73e1c793a30d9ec9f175.png)
+![chongwu](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\chongwu.png)
 
 #### 领养申请
 
-![6f960a8d9118582602cc24ec21c4569d](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\6f960a8d9118582602cc24ec21c4569d.png)
+![lingyang](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\lingyang.png)
 
 
 
 #### 评论管理
 
-![281427ccae41ca6074f2453b58600827](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\281427ccae41ca6074f2453b58600827.png)
+![pinglun](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\pinglun.png)
 
 #### 数据分析
 
-![55090a9569f82921d44782c393bc47c0](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\55090a9569f82921d44782c393bc47c0.png)
+![shujufenxi](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\shujufenxi.png)
 
 #### 收藏管理
 
-#### ![image-20250812212705780](C:\Users\lh168\AppData\Roaming\Typora\typora-user-images\image-20250812212705780.png)
+#### ![shoucang](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\user\shoucang.png)
 
 
 
@@ -171,7 +171,7 @@ frontend/
 
 
 
-![f725276b072362c75a93e70e5bf484fa](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\f725276b072362c75a93e70e5bf484fa.png)
+![qianduan](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\qianduan.png)
 
 ### 后端
 
@@ -193,7 +193,7 @@ src/main/java/com/example/petadoption/
 └─resources	// maven资源配置
 ```
 
-![a40fb71a239b7245450ea6ce0e050b70](C:\Users\lh168\Documents\Tencent Files\2774467877\nt_qq\nt_data\Pic\2025-08\Ori\a40fb71a239b7245450ea6ce0e050b70.png)
+![houduan](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\houduan.png)
 
 
 
@@ -203,4 +203,15 @@ src/main/java/com/example/petadoption/
 
 **使用Navicat生成ER模型图**
 
-![QQ_1755005508477](C:\Users\lh168\AppData\Local\Temp\QQ_1755005508477.png)
+![E-R](D:\springboot\springboot\基于springboot的宠物领养管理系统设计\src\main\images\E-R.png)
+
+
+
+
+
+
+
+
+
+
+
